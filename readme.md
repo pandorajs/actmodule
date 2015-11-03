@@ -1,4 +1,4 @@
-#listview
+#actmodule
 
 
  > 内容中心通用活动组件
