@@ -1,0 +1,123 @@
+img{border: 0;}
+p{padding: 0; margin: 0;}
+:link, :visited, ins { text-decoration: none; }
+a {text-decoration: none; }
+h4{padding: 0; margin: 0;font-size: 100%; font-weight:normal; }
+.lottery-or{color: #ff3c00;}
+.lottery-red{color:#fe0000}
+.lottery-fb {font-weight:bold;}
+.lottery-oz{overflow: hidden;*zoom:1;}
+.lottery-fl{float: left;}
+.lottery-fr{float:right;}
+.lottery-tc{text-align: center;}
+.lottery-tr{text-align:right;}
+
+.lottery{ border: 1px solid #eee; overflow: hidden;*zoom:1;margin: 0 0 10px 0;font-family: "Microsoft Yahei","Simsun"; font-size: 14px; color: #666; line-height: 1.8; }
+.lottery-tit { font: bold 18px/2 "Microsoft Yahei"; color: #333;}
+.lottery-tits { font-weight: bold; color: #333; }
+.lottery-p{margin:0; padding: 0;text-indent:0; }
+.lottery-ico{display:inline-block;*display:inline;*zoom:1; vertical-align:middle;background: url(../src/img/act-ico-sp.png) no-repeat;}
+.lottery-bd{overflow: hidden;*zoom:1;}
+.lottery-btn {display: block; text-align: center; color: #fff; -moz-border-radius: 5px;-webkit-border-radius: 5px;-ms-border-radius: 5px;border-radius: 5px; height: 50px; font: normal 24px/50px "Microsoft Yahei"; width: 130px; margin: 20px auto 10px; border: 1px solid #fff; }
+.lottery-btn-begin { background: #6beaff; border-color: #6beaff; }
+.lottery-btn-begin:hover { background: #39e3ff; }
+.lottery-btn-in { background: #ff6f3d; border-color: #ff6f3d; }
+.lottery-btn-in:hover { background: #ff551a; }
+.lottery-btn-end { background: #fcfcfc; border-color: #eee; color: #ccc; }
+
+.lottery1 { position: relative; padding: 10px; }
+.lottery-pic { float: left; width: 180px; margin: 0 10px 0 0; padding: 0; }
+.lottery-text { overflow: hidden;*zoom:1; margin: 0 180px 0 0; padding: 0 20px 0 0;}
+.lottery1 .lottery-state { position: absolute; width: 190px; height: 135px; right: 0; top: 10px; text-align: center; border-left: 1px dashed #ebeef4; }
+.lottery1 .lottery-text{height: 135px; }
+
+
+.lottery2 { position: relative; padding: 10px 30px 10px 10px; }
+.lottery2 .lottery-text { margin: 0; padding: 0 0 45px 0; }
+.lottery2 .lottery-btn { position: absolute; right: 30px; bottom: 10px; height: 40px; margin: 0; font: normal 20px/40px "Microsoft Yahei"; }
+.lottery2 .lottery-state-tt { position: absolute; bottom: 10px; line-height: 40px;margin: 0;    padding: 0;}
+
+/*lottery3*/
+.lottery3{padding:10px 18px;}
+.lottery3 .lottery-hd{margin-bottom:10px}
+.lottery3-c2 {overflow: hidden; padding-left: 30px; border-left: 1px dashed #f0f0f0;*zoom:1; }
+.lottery3-c1 {padding-right: 30px;text-align:center;padding-left: 20px;}
+.lottery3-c2-ex{border-top: 1px dashed #f0f0f0;margin-top: 15px;padding-top: 15px;}
+
+.lottery-item {display: inline-block;*display: inline;*zoom: 1;vertical-align: middle; margin: 0 2px 4px;  width: 110px;  height: 90px;}
+.lottery-btn-winners{display:inline-block;*display:inline;*zoom:1;border: 1px solid #ff3c00; height:28px;line-height: 28px;text-align: center;color:#ff3c00;padding:0 30px;-moz-border-radius: 20px;-webkit-border-radius: 20px;-ms-border-radius: 20px;border-radius: 20px;}
+.lottery-btn-winners:hover{background-color:#ff6242; color:#fff;}
+.lottery-lottery{overflow: hidden;*zoom:1;margin: 0 -2px;font-size: 0;}
+.lottery-ico-play{background-position:0 0; width:24px;height:24px;margin:12px 0 14px 5px;}
+.lottery-info .lottery-p{line-height: 2.3}
+.lottery-btn-cj{display: block;*display:inline;*zoom:1;width: 100%;height:50px;text-align:center;background:#18c983;color:#fff;font:bold 24px/50px "Microsoft Yahei";margin-bottom: 10px;}
+a.lottery-btn-cj:hover{background:#13b86d;}
+.lottery-btn-cjw{background: #ccc;}
+.lottery-btn-cjw .lottery-ico-play{background-position: 0 -30px;}
+.lottery-item-ex2 .lottery-btn-cj{height: 100%;line-height: 1; margin-bottom: 0;}
+.lottery-btn-cj-ex .lottery-ico-play{margin:12px 0 14px 5px;}
+
+.lottery-item-ex{width:224px;}
+.lottery-item-ex1{width:338px;}
+.lottery-item-ex1 .lottery-btn-cj,.lottery-item-ex .lottery-btn-cj{line-height: 90px;height: 90px;margin: 0; }
+.lottery-item-ex1 .lottery-btn-cj .lottery-ico-play,.lottery-item-ex .lottery-btn-cj .lottery-ico-play{_margin:31px 0 35px 5px}
+
+
+/*lottery4*/
+.lottery4{padding: 18px;width: 175px;text-align: center;}
+.lottery4 .lottery-tit{border-bottom: 1px solid #e6e6e6;}
+
+/*lottery-pop*/
+.lottery-pop{width:410px;position: relative;padding: 15px;-moz-border-radius:5px;-webkit-border-radius:5px;-ms-border-radius:5px;background-color:#fff;font-family: "Microsoft Yahei","Simsun"; font-size: 14px; color: #666; line-height: 1.7;margin-bottom: 20px;}
+.lottery-pop-tit{font-size:14px; border-bottom:1px solid #e6e6e6;height: 40px;line-height: 40px;color:#000;font-weight: bold;}
+
+.lottery-pcon{padding:20px 0 10px 0;margin: 0;}
+.lottery-pop-ex .lottery-pcon{padding:20px 20px 10px;}
+.lottery-pop-ex1 .lottery-pcon{padding-left:40px;}
+.lottery-pop-close{position: absolute; right:15px;top:15px;width:15px;height: 15px;background: url(../src/img/act-ico-sp.png) no-repeat;background-position: 0 -55px;cursor:pointer;}
+.lottery-pop-close:hover{background-position:0 -70px}
+.lottery-btn-submit{width: 100px;height: 30px;line-height: 30px;background:#ff6f3d; color:#fff;text-align: center;-moz-border-radius:5px;-webkit-border-radius:5px;-ms-border-radius:5px;border-radius:5px;margin: 20px 0 0 0;border: 0}
+.lottery-btn-submit:hover{background-color:#ff551a}
+
+.lottery-vote{padding-left: 50px;}
+.lottery-votelist{list-style: none;padding: 0;margin: 0;}
+.lottery-votelist-item{line-height: 2;*width:100%;*float:left;cursor:pointer; }
+.lottery-votelist-item div{padding-left:32px;background: url(../src/img/act-ico-sp.png) no-repeat;background-position: 5px -107px;}
+.lottery-votelist .on div{background-position: 5px -132px;}
+.lottery-form-item{overflow:hidden;*zoom:1;padding-bottom:15px;}
+
+.lottery-form-textarea{height:98px; line-height:24px;border:1px solid #eee;padding:5px;}
+.lottery-form-textarea textarea{overflow-x:hidden;overflow-y:auto;resize: none;outline: 0;font-size: inherit;font-family: inherit;font-style: inherit;font-weight: inherit;*font-size:100%;border: 0;width: 100%;height: 100%;}
+.lottery-form-input{float:left;margin-right:10px;*display: inline;*zoom:1;}    
+.lottery-form-input input{border:1px solid #eee;width: 214px;height:34px; line-height: 34px;  padding:0 10px;-moz-border-radius: 2px;-webkit-border-radius: 2px;-ms-border-radius: 2px;border-radius: 2px;font-family: inherit;font-size: inherit;font-style: inherit;font-weight: inherit;*font-size:100%;outline: 0}
+.lottery-form-input-ex input{width: 340px;}
+.lottery-vcode{padding-left: 40px;}
+.lottery-lxfs{padding-left: 20px;}
+
+.lottery-form-tit {float:left;width:45px;color: #999;height:36px;line-height:36px;text-align:right;margin-right:10px;}
+.lottery-lxfs .lottery-btn-submit{margin:20px 0 0 55px;}
+.lottery-btn-cancel{width: 100px;border: 1px solid #e6e6e6; -moz-border-radius: 5px;-webkit-border-radius: 5px;-ms-border-radius: 5px;border-radius: 5px;height: 30px;line-height: 30px;text-align: center;color:#666;margin:20px 0 0 10px;background-color: #fff;}
+.lottery-btn-sendcode{display:block; float:left;width:98px;height:34px;line-height:34px;text-align: center;border: 1px solid #e6e6e6; color:#999;-moz-border-radius: 2px;-webkit-border-radius: 2px;-ms-border-radius: 2px; border-radius:2px; }
+.lottery-form-error{padding-left:20px;background:url(../src/img/act-ico-sp.png) no-repeat;background-position: 0 -85px;}
+.lottery-link-hyz{text-decoration:underline;color:#ff6f3d;float: right;line-height: 36px;margin-right: 35px;}
+.lottery-pop-verify-code .show,.lottery-pop-verify-input span,.lottery-pop-verify-choose a{background:url(../src/img/verify-code.png) no-repeat; }
+.lottery-pop-verify{width: 247px;margin: 0 auto;}
+.lottery-pop-verify-input{margin:20px auto 10px;overflow: hidden;*zoom:1;}
+.lottery-pop-verify-input span{display: block;float: left;width:48px;border: 1px solid #e6e6e6; border-right: 0;height: 48px;line-height: 48px; background-position: -300px -300px;}
+.lottery-verify-btn-delete{display:block; float:left;width:50px;height: 50px;background:#ff6f3d;border-left:1px solid #e6e6e6;}
+.lottery-verify-btn-delete:hover{background:#ff551a;}
+.lottery-ico-delete{width:21px;height: 15px;background-position:0 -168px;margin: 18px 14px 0;}
+.lottery-pop-verify-code{overflow:hidden;*zoom:1;margin: 10px 0}
+.lottery-pop-verify-code .show{float: left;width: 144px;height: 36px;background-position: 0 0}
+.lottery-pop-verify-choose{ width: 216px;overflow:hidden;*zoom:1;margin: 0 -8px;font-size: 0;}
+
+.lottery-pop-verify-choose a{display:block;*display:inline;*zoom:1;float:left;margin:8px;border: 1px solid #e0e0e0; border-bottom-color: #bfbfbf;overflow: hidden;width: 48px;height: 48px;}
+.lottery-pop-zjjg .lottery-pcon{padding: 20px 20px 10px; }
+.lottery-pop-zjjg .lottery-tit{margin-bottom: 20px;}
+.lottery-zjjg-c1{border-bottom:1px solid #e6e6e6;margin-bottom: 10px;}
+.lottery-btn-box{padding-left:55px;}
+.lottery-btn-copy{width:65px;height: 34px;text-align: center;line-height: 34px;display: block;-moz-border-radius: 2px;-webkit-border-radius: 2px;-ms-border-radius: 2px;border-radius: 2px;float: right; border: 1px solid #e6e6e6;color: #999;}
+.lottery-btn-copy:hover{color:#ff551a;border-color:#ff551a;}
+.lottery-pop-wzj .lottery-pcon{text-align: center;}
+.lottery-pop-wzj .lottery-tit{padding-bottom: 0}
+.lottery-pop-line{border-bottom:1px solid #e6e6e6;height: 0; width: 100%;line-height:0;overflow:hidden;margin-bottom: 15px;}

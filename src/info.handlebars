@@ -1,0 +1,20 @@
+<div class="lottery-pop lottery-pop-ex" id="info_pop" style="z-index:9999; top:0; left:0; position:fixed;">
+	<span class="lottery-pop-close"></span>
+	<h4 class="lottery-pop-tit">提交联系方式，仅用于奖品发放</h4>
+	<div class="lottery-pcon">
+		<div class="lottery-form-item"><p class="lottery-p lottery-or">请填写真实信息，奖品将通过所填写的联系方式进行发放！</p></div>
+		{{#each this}}
+		<div class="lottery-form-item">
+			<div class="lottery-form-tit">{{name}}</div>
+			<div class="lottery-form-input">
+				<input type="text" value="" placeholder="" name="{{columnName}}" maxlength="{{length}}">
+				<div class="lottery-form-error lottery-or" style="display:none;"></div>
+			</div>
+		</div>
+		{{/each}}
+
+		<div class="lottery-btn-box lottery-btn-box-ex"><button type="button" class="lottery-btn-submit" id="submit_info">提交</button><button type="button" class="lottery-btn-cancel" id="cancel_submit_info">取消</button></div>
+	</div>
+</div>
+
+<div class="lottery-mask" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:999;"></div>

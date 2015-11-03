@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>通用活动组件</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
+    <script src="../vendor/seajs/sea.js"></script>
+    <script src="../vendor/seajs/seajs-text.js"></script>
+    <script src="http://ue.17173cdn.com/a/www/index/2015/js/passport.js"></script>
+    <!-- <script src="http://ue.17173cdn.com/a/lib/pandora.js"></script>-->
+    <script type="text/javascript">
+    seajs.config({
+        'base': '../sea-modules/',
+        'alias': {
+            '$': 'jquery/jquery/2.1.0/jquery',
+            "handlebars": "gallery/handlebars/1.3.0/handlebars",
+            'importstyle': 'pandora/importstyle/1.0.0/importstyle',
+            'base': 'pandora/base/1.0.0/base',
+            'widget': 'pandora/widget/1.0.0/widget',
+        }
+    });
+    </script>
+
+    <style type="text/css">
+        .resend{ display: none;}
+        .lottery-btn-sendcode-disabled .resend{ display: inline;}
+        .lottery-btn-sendcode-disabled .send{ display: none;}
+        .lottery-item{ position: relative;}
+        .lottery-item div{ width: 110px; height: 90px; position: absolute; background: rgba(255,255,255,.6); top: 0; left: 0; display: none;}
+        .blink div{ display: block !important;}
+    </style>
+</head>
+
+<body>
+<div id="act"></div>
+<script type="text/javascript">
+    seajs.use(['../src/actmodule'], function(ActModule) {
+        new ActModule({
+            element: '#act',
+            actId: 4959, //活动ID
+            lotteryId: 62, //抽奖ID
+            style: 1, //样式
+            // voteId: 10132, //投票ID
+            needComment: true, //是否需要评论
+            commentTip: '这里你要评论下', //评论导语
+            fieldSetId: 39, //收集信息的表单ID
+            // needInfo: true //是否需要填写个人信息
+        });
+    });
+</script>
+
+<div id="SOHUCS" sid="4065990_2_10345"></div>
+<script type="text/javascript">
+    var _config = {
+    categoryId :'10345'  //接入频道需要填写相应的categoryId
+    };
+  (function(){
+    var appid = 'cyqvqDTV5',
+    conf = 'prod_303ed4c69846ab36c2904d3ba8573050';
+    var doc = document,
+    s = doc.createElement('script'),
+    h = doc.getElementsByTagName('head')[0] || doc.head || doc.documentElement;
+    s.type = 'text/javascript';
+    s.charset = 'utf-8';
+    s.src =  'http://assets.changyan.sohu.com/upload/changyan.js?conf='+ conf +'&appid=' + appid;
+    h.insertBefore(s,h.firstChild);
+    SCS_NO_IFRAME = true;
+  })()
+</script>
+
+
+
+
+
+</body>
+
+</html>
