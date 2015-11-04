@@ -37,6 +37,8 @@ define(function(require, exports, module) {
 			};
 			this.getActInfo();
 			this.getTemplates();
+			this.prizeText = $(this.element).find('.prize-text').html();
+			$(this.element).html('');
 		},
 
 		/**
@@ -164,15 +166,13 @@ define(function(require, exports, module) {
 	     * @private
 	     */	
 		checkValidate: function(){
-			if(this.validateType === 'text'){
-
-			} else if(this.validateType === 'sms'){
+			if(this.validateType === 'sms'){
 				this.showSmsPop();
 			} else if(this.validateType === 'image'){
 				this.showImageCaptcha();
 			} else if(this.option('needInfo')){
 				this.showInfoPop();
-			} else if(this.validateType === 'none'){
+			} else{
 				this.doLottery();
 			}
 		},
@@ -306,7 +306,8 @@ define(function(require, exports, module) {
 		            moving = false;
 		            clearInterval(timer);
 		            setTimeout(function() {
-		            	$(template(data)).appendTo('body');
+		            	$(template(data)).appendTo(self.element);
+		            	typeof self.copy === 'function' && self.copy();
 		            }, 500);
 		        }
 		    }
@@ -335,6 +336,11 @@ define(function(require, exports, module) {
 				data = data ? data : {};
 
 			$.getJSON(this.url.lotteryUrl, data, function(resultData){
+				resultData.code = '25235236236236';
+				resultData.secretKey = 'secretKey';
+
+
+				resultData.prizeText = self.prizeText;
 				self.handleLotteryResult(resultData);
 			});
 		},

@@ -7,7 +7,8 @@ define(function(require, exports, module) {
 	var $ = window.$ = require('$'),
 		Core = require('./core'),
 		Utils = require('./utils'),
-		importStyle = require('./css/layout.css');
+		importStyle = require('./css/layout.css'),
+		ZeroClipboard = require('./jquery.zclip');
 
 	/**
 	* 表现层类
@@ -37,6 +38,7 @@ define(function(require, exports, module) {
 	     * @property {object} defaults 默认参数
 	     * @type {object}
 	     */
+
 		defaults: {
 			delegates: {
 				'click .lottery-btn-in': function(e){
@@ -83,6 +85,7 @@ define(function(require, exports, module) {
 				}
 			}
 		},
+
 
 	    /**
 	     * @method getTemplates 获取4个样式的模板
@@ -137,6 +140,7 @@ define(function(require, exports, module) {
 		render: function(actInfo){
 			var self = this;
 			actInfo.status = self.checkStatus(actInfo.beginTime, actInfo.endTime);
+
 			switch(self.option('style')){
 				case 1:
 					$(self.template1(actInfo)).appendTo(self.element);
@@ -155,7 +159,7 @@ define(function(require, exports, module) {
 			//活动进行中 
 			if(actInfo.status.inProgress){
 				self.element.find('.lottery-or').text(actInfo.joins);
-				//如果需求投票, 取回投票数据
+				//如果需要投票, 取回投票数据
 				if(self.option('voteId')){
 					self.getVoteInfo();
 				} 
@@ -444,13 +448,31 @@ define(function(require, exports, module) {
 			}
 
 			var template = require('./result.handlebars');
-			$('#captcha_pop').remove();
+			$('.lottery-pop, .lottery-mask').remove();
 
 			if(this.option('style') === 3){
 				this.animateIt(data.prizeId, data, template);
 			} else{
 	        	$(template(data)).appendTo(this.element);
+	        	this.copy();
 			}
+
+		},
+
+		/**
+		 * @method copy 复制按钮功能
+		 */	
+		copy: function(){
+			$('#btn_copy_code').zclip({
+				path: '../src/ZeroClipboard.swf',
+				copy: 'xxx',
+				beforeCopy: function(){
+					alert(353)
+				},
+				afterCopy: function(){
+					alert('复制完成.');
+				}
+			})
 		}
 
 	});

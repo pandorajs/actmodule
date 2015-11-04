@@ -8,16 +8,16 @@
 			{{#if code}}
 			<div class="lottery-form-item">
 				<div class="lottery-form-tit">帐号：</div>
-				<div class="lottery-form-input"><input type="text" value="{{code}}"></div>
-				<a href="javascript:;" class="lottery-btn-copy">复制</a>
+				<div class="lottery-form-input"><input id="act_module_code" type="text" value="{{code}}"></div>
+				<a href="javascript:;" class="lottery-btn-copy" id="btn_copy_code">复制</a>
 			</div>
 			{{/if}}
 
 			{{#if secretKey}}
 			<div class="lottery-form-item">
 				<div class="lottery-form-tit">密码：</div>
-				<div class="lottery-form-input"><input type="text" value="{{secretKey}}"></div>
-				<a href="javascript:;" class="lottery-btn-copy">复制</a>
+				<div class="lottery-form-input"><input id="act_module_secretkey" type="text" value="{{secretKey}}"></div>
+				<a href="javascript:;" class="lottery-btn-copy" id="btn_copy_secretkey">复制</a>
 			</div>
 			{{/if}}
 		</div>
@@ -25,14 +25,8 @@
 
 		<div class="lottery-zjjg-c2">
 			<h4 class="tit">说明：</h4>
-			<p>1、登陆http://nsg.zqgame.com/，注册中青宝通行证</p>
-			<p>2、登陆游戏，到洛阳找到NPC“ 特权卡发放专员 ”</p>
-			<p>3、选择“激活码兑换”</p>
-			<p>4、输入激活码序列号，即可领取“17173称霸天下礼包”</p>
-			<p class="lottery-red">激活时间：9月15号</p>
-			<p>注：一个角色只能领取一次媒体礼包激活码，不能重复领取</p>
+			{{{prizeText}}}
 		</div>
-
 
 
 		<div class="lottery-zjjg-c2">
