@@ -9,6 +9,7 @@
  */
 
 define(function(require, exports, module) {
+
     (function (jQuery) {
 
         jQuery.fn.zclip = function (params) {
@@ -24,6 +25,7 @@ define(function(require, exports, module) {
                     if (o.is(':visible') && (typeof settings.copy == 'string' || jQuery.isFunction(settings.copy))) {
 
                         ZeroClipboard.setMoviePath(settings.path);
+
                         var clip = new ZeroClipboard.Client();
 
                         if (jQuery.isFunction(settings.copy)) {
@@ -51,7 +53,6 @@ define(function(require, exports, module) {
                         });
 
                         clip.addEventListener('mouseDown', function (client) {
-
                             o.trigger('mousedown');
 
                             if (jQuery.isFunction(settings.beforeCopy)) {
@@ -276,7 +277,7 @@ define(function(require, exports, module) {
             this.domElement = ZeroClipboard.jQuery(elem);
 
             // float just above object, or zIndex 99 if dom element isn't set
-            var zIndex = 99;
+            var zIndex = 99999;
             if (this.domElement.style.zIndex) {
                 zIndex = parseInt(this.domElement.style.zIndex, 10) + 1;
             }
@@ -409,6 +410,7 @@ define(function(require, exports, module) {
         },
 
         receiveEvent: function (eventName, args) {
+
             // receive event from flash
             eventName = eventName.toString().toLowerCase().replace(/^on/, '');
 
@@ -419,6 +421,7 @@ define(function(require, exports, module) {
                 // bug fix: Cannot extend EMBED DOM elements in Firefox, must use traditional function
                 this.movie = document.getElementById(this.movieId);
                 var self = this;
+
 
                 if (!this.movie) {
                     setTimeout(function () {
@@ -451,7 +454,6 @@ define(function(require, exports, module) {
                     if (this.recoverActive) {
                         this.domElement.addClass('active');
                     }
-
                 }
                 break;
 

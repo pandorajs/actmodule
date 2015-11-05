@@ -24,21 +24,23 @@ define(function(require, exports, module) {
 		setup: function(){
 			var host = this.host = 'http://p.act.dev.17173.com/api/v1/activity/' + this.option('actId'),
 				lotteryId = this.option('lotteryId');
-			this.url = {
-				voteInfoUrl: 'http://vote.17173.com/port/getvote_interface.php?callback=?',
-				voteProcUrl: 'http://vote.17173.com/action/vote_process_interface.php?callback=?',
-				lotteryUrl: host + '/lottery/' + lotteryId + '?callback=?',
-				fieldsetUrl: host + '/form?callback=?',
-				actInfoUrl: host + '/info?callback=?',
-				lotteryInfoUrl: host + '/lottery/' + lotteryId + '/info?callback=?',
-				smsUrl: host + '/lottery/' + lotteryId + '/smsCaptchaCode?callback=?',
-				saveInfoUrl: host + '/form/' + this.option('fieldSetId') + '/saveData?callback=?',
-				checkLoginUrl: host + '/lottery/' + lotteryId + '/chkLogin?callback=?'
+			this.urls = {
+				voteInfo: 'http://vote.17173.com/port/getvote_interface.php?callback=?',
+				voteProc: 'http://vote.17173.com/action/vote_process_interface.php?callback=?',
+				lottery: host + '/lottery/' + lotteryId + '?callback=?',
+				fieldset: host + '/form?callback=?',
+				actInfo: host + '/info?callback=?',
+				lotteryInfo: host + '/lottery/' + lotteryId + '/info?callback=?',
+				sms: host + '/lottery/' + lotteryId + '/smsCaptchaCode?callback=?',
+				saveInfo: host + '/form/' + this.option('fieldSetId') + '/saveData?callback=?',
+				checkLogin: host + '/lottery/' + lotteryId + '/chkLogin?callback=?',
+				cyanLoad: 'http://changyan.sohu.com/api/2/topic/load?callback=?',
+				commentSubmit: 'http://act.17173.com/comment/submit.php?callback=?'
 			};
 			this.getActInfo();
 			this.getTemplates();
-			this.prizeText = $(this.element).find('.prize-text').html();
-			$(this.element).html('');
+
+			typeof Passport === 'undefined' && $.getScript('http://ue.17173cdn.com/a/www/index/2015/js/passport.js');
 		},
 
 		/**
@@ -47,12 +49,13 @@ define(function(require, exports, module) {
 		 */
 		getActInfo: function(){
 			var self = this;
-			$.getJSON(self.url.actInfoUrl, function(actInfo){
+			$.getJSON(self.urls.actInfo, function(actInfo){
+				//如果活动出错，直接退出
 				if(actInfo.result){
-					alert(actInfo.msg);
-				} else{
-					self.getLotteryInfo(actInfo);
-				}			
+					return;
+					// alert(actInfo.msg);
+				}
+				self.getLotteryInfo(actInfo);
 			});
 		},
 
@@ -63,8 +66,9 @@ define(function(require, exports, module) {
 	     */
 		getLotteryInfo: function(actInfo){
 			var self = this;
-			$.getJSON(this.url.lotteryInfoUrl, function(lotteryData){
+			$.getJSON(this.urls.lotteryInfo, function(lotteryData){
 				self.validateType = lotteryData.isVeriCode;
+				self.needLoggedIn = lotteryData.limitCond.indexOf('login') > -1;
 				actInfo.prizeList = lotteryData.prizeList;
 				self.render(actInfo);
 			});
@@ -81,7 +85,7 @@ define(function(require, exports, module) {
 			} else if(this.option('needComment')){
 				this.showCommentPop();
 			} else{
-				this.checkValidate();
+				this.needLoggedIn ? this.checkLogin() : this.checkValidate();
 			}
 		},
 
@@ -92,7 +96,7 @@ define(function(require, exports, module) {
 		getVoteInfo: function(){
 			var self = this;
 			$.ajax({
-				url: self.url.voteInfoUrl,
+				url: self.urls.voteInfo,
 				data: {
 					id: self.option('voteId')
 				},
@@ -110,7 +114,7 @@ define(function(require, exports, module) {
 	     */
 		doVote: function(voteData){
 			var self = this;
-			$.getJSON(self.url.voteProcUrl, voteData, function(data){
+			$.getJSON(self.urls.voteProc, voteData, function(data){
 				self.voteSuccess();
 			})
 		},
@@ -121,6 +125,7 @@ define(function(require, exports, module) {
 	     * @private
 	     */		
 		isLoggedIn: function(){
+
 			if(typeof Passport !== 'undefined' && Passport.isLoggedIn()){
 				return true;
 			}
@@ -128,7 +133,7 @@ define(function(require, exports, module) {
 				return false;
 			}
 
-			$.getJSON(this.url.checkLoginUrl, function(data){
+			$.getJSON(this.urls.checkLogin, function(data){
 				if(data.loginStatus == 0){
 					return false;
 				}
@@ -144,13 +149,14 @@ define(function(require, exports, module) {
 	     */		
 		doComment: function(val, sid){
 			var self = this;
-			$.getJSON('http://changyan.sohu.com/api/2/topic/load?callback=?', {
+			$.getJSON(this.urls.cyanLoad, {
 				source_id: sid, //评论SID,不可为空
                 topic_url: location.href, //需要评论文章的URL,不可为空
                 client_id: 'cyqvqDTV5' //固定，不要更改
 			}, function(data){
+				data = mapCommentData(data);
 				var topicId = data.topic_id;
-				$.getJSON('http://act.17173.com/comment/submit.php?callback=?', {
+				$.getJSON(self.urls.commentSubmit, {
                     client_id: 'cyqvqDTV5',//固定，不要更改
                     topic_id: topicId,
                     content: encodeURIComponent(val),
@@ -159,6 +165,9 @@ define(function(require, exports, module) {
 					self.commentSuccess();
 				})
 			})
+		},
+		mapCommentData: function(data){
+			return data;
 		},
 
 	    /**
@@ -183,7 +192,7 @@ define(function(require, exports, module) {
 	     * @private
 	     */	
 		sendSms: function(mobile){
-			$.getJSON(this.url.smsUrl, {mobile: mobile}, function(data){
+			$.getJSON(this.urls.sms, {mobile: mobile}, function(data){
 				if(data.result === 'info.sms.failed'){ //TODO: !! 这里改成成功的
 					self.smsSended = true;
 					self.smsSendSuccess();
@@ -205,7 +214,7 @@ define(function(require, exports, module) {
 					lotteryId: self.lotteryId,
 					formData: formData
 				}
-				$.getJSON(self.url.saveInfoUrl, info, function(data){
+				$.getJSON(self.urls.saveInfo, info, function(data){
 					if(data.result === 'info.form.success'){
 						self.submitInfoSuccess();
 					} else{
@@ -335,7 +344,7 @@ define(function(require, exports, module) {
 			var self = this,
 				data = data ? data : {};
 
-			$.getJSON(this.url.lotteryUrl, data, function(resultData){
+			$.getJSON(this.urls.lottery, data, function(resultData){
 				resultData.code = '25235236236236';
 				resultData.secretKey = 'secretKey';
 

@@ -8,7 +8,7 @@ define(function(require, exports, module) {
 		Core = require('./core'),
 		Utils = require('./utils'),
 		importStyle = require('./css/layout.css'),
-		ZeroClipboard = require('./jquery.zclip');
+		ZeroClipboard = window.ZeroClipboard = require('./jquery.zclip');
 
 	/**
 	* 表现层类
@@ -85,10 +85,15 @@ define(function(require, exports, module) {
 				}
 			}
 		},
+		setup: function(){
+			ActModule.superclass.setup.apply(this);
+			this.prizeText = $(this.element).find('.prize-text').html();
+			$(this.element).html('');
+		},
 
 
 	    /**
-	     * @method getTemplates 获取4个样式的模板
+	     * @method getTemplates 引入样式表及获取4个样式的模板
 	     *
 	     */
 		getTemplates: function(){
@@ -155,6 +160,8 @@ define(function(require, exports, module) {
 					$(self.template4(actInfo)).appendTo(self.element);
 					break;
 			}
+
+
 
 			//活动进行中 
 			if(actInfo.status.inProgress){
@@ -250,7 +257,7 @@ define(function(require, exports, module) {
 		 */				
 		voteSuccess: function(){
 			$('#vote_pop, .lottery-mask').hide();
-			this.checkLogin(); 
+			this.checkLogin();
 		},
 
 		/**
@@ -287,13 +294,7 @@ define(function(require, exports, module) {
 		 * @method checkLogin 检查是否登录
 		 */	
 		checkLogin: function(){
-			if(this.isLoggedIn()){
-				this.checkValidate();
-			} else if(typeof Passport !== 'undefined'){
-				Passport.Dialog.show();
-			} else{
-				alert('请先登录');
-			}
+			this.isLoggedIn() ? this.checkValidate() : Passport.Dialog.show();
 		},
 
 		/**
@@ -450,13 +451,12 @@ define(function(require, exports, module) {
 			var template = require('./result.handlebars');
 			$('.lottery-pop, .lottery-mask').remove();
 
-			if(this.option('style') === 3){
+			if(this.option('style') === 3 && resultType === 1){
 				this.animateIt(data.prizeId, data, template);
 			} else{
 	        	$(template(data)).appendTo(this.element);
 	        	this.copy();
 			}
-
 		},
 
 		/**
@@ -465,14 +465,22 @@ define(function(require, exports, module) {
 		copy: function(){
 			$('#btn_copy_code').zclip({
 				path: '../src/ZeroClipboard.swf',
-				copy: 'xxx',
-				beforeCopy: function(){
-					alert(353)
+				copy: function(){
+					return $('#act_module_code').val()
 				},
 				afterCopy: function(){
 					alert('复制完成.');
 				}
-			})
+			});
+			$('#btn_copy_secretkey').zclip({
+				path: '../src/ZeroClipboard.swf',
+				copy: function(){
+					return $('#act_module_secretkey').val()
+				},
+				afterCopy: function(){
+					alert('复制完成.');
+				}
+			});
 		}
 
 	});
