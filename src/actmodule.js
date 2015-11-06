@@ -112,7 +112,7 @@ define(function(require, exports, module) {
 		checkStatus: function(beginTime, endTime){
 			var beginTimeUnix = Utils.datetimeToUnix(beginTime),
 				endTimeUnix = Utils.datetimeToUnix(endTime),
-				nowUnix = ~~(new Date().getTime() / 1000);
+				nowUnix = ~~($.now() / 1000);
 			if(nowUnix < beginTimeUnix){
 				return {
 					text: '即将开始',
@@ -160,7 +160,6 @@ define(function(require, exports, module) {
 					$(self.template4(actInfo)).appendTo(self.element);
 					break;
 			}
-
 
 
 			//活动进行中 
@@ -469,7 +468,7 @@ define(function(require, exports, module) {
 					return $('#act_module_code').val()
 				},
 				afterCopy: function(){
-					alert('复制完成.');
+					alert('已复制到剪贴板。');
 				}
 			});
 			$('#btn_copy_secretkey').zclip({
@@ -478,7 +477,7 @@ define(function(require, exports, module) {
 					return $('#act_module_secretkey').val()
 				},
 				afterCopy: function(){
-					alert('复制完成.');
+					alert('已复制到剪贴板。');
 				}
 			});
 		}

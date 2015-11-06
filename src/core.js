@@ -4,6 +4,7 @@ define(function(require, exports, module) {
 		Handlebars = require('handlebars'),
 		Utils = require('./utils');
 
+
 	/**
 	* 数据及基础类
 	*
@@ -39,8 +40,54 @@ define(function(require, exports, module) {
 			};
 			this.getActInfo();
 			this.getTemplates();
-
+			this.ajaxPrefilter();
 			typeof Passport === 'undefined' && $.getScript('http://ue.17173cdn.com/a/www/index/2015/js/passport.js');
+		},
+
+		/**
+		 * @method ajaxPrefilter 防止重复发送AJAX请求
+		 * @private
+		 */
+		ajaxPrefilter: function(){
+			var pendingRequests = {};
+			function generatePendingRequestKey(options){
+				return options.url;
+			}
+			function storePendingRequest(key, jqXHR){
+				pendingRequests[key]=jqXHR;
+				jqXHR.pendingRequestKey = key;
+			}
+
+			$.ajaxPrefilter(function(options, originalOptions, jqXHR){
+				var key = generatePendingRequestKey(options);
+				if (!pendingRequests[key]) {
+					storePendingRequest(key, jqXHR);
+				} else {
+					jqXHR.abort();
+				}
+				var success = options.success;
+				options.success = function(jqXHR, textStatus) {
+					if ($.isFunction(success)) {
+						success.apply(this, arguments);
+					}
+				}
+			  
+				var error = options.error;
+				options.error = function(jqXHR, textStatus) {
+					if ($.isFunction(error)) {
+						error.apply(this, arguments);
+					}
+				};
+				  
+				//complete最后执行，所以清除request放在此方法中  
+				var complete = options.complete;
+				options.complete = function(jqXHR, textStatus) {
+					pendingRequests[jqXHR.pendingRequestKey] = null;
+					if ($.isFunction(complete)) {
+						complete.apply(this, arguments);
+					}
+				}
+			})
 		},
 
 		/**
@@ -50,10 +97,9 @@ define(function(require, exports, module) {
 		getActInfo: function(){
 			var self = this;
 			$.getJSON(self.urls.actInfo, function(actInfo){
-				//如果活动出错，直接退出
+				//如果有错误信息，直接退出
 				if(actInfo.result){
 					return;
-					// alert(actInfo.msg);
 				}
 				self.getLotteryInfo(actInfo);
 			});
@@ -316,7 +362,7 @@ define(function(require, exports, module) {
 		            clearInterval(timer);
 		            setTimeout(function() {
 		            	$(template(data)).appendTo(self.element);
-		            	typeof self.copy === 'function' && self.copy();
+		            	$.isFunction(self.copy) && self.copy();
 		            }, 500);
 		        }
 		    }
