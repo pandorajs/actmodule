@@ -1,0 +1,23 @@
+<div class="lottery2 lottery-comm">
+	<div class="lottery-txt">
+		<h4 class="lottery-tit">{{name}}</h4>
+		<p><span class="lottery-txt-name">活动时间：</span>{{lotteryBeginTimeFormatted}} - {{lotteryEndTimeFormatted}}</p>
+		<p><span class="lottery-txt-name">活动规则：</span>{{description}}</p>
+	</div>
+
+	{{#if status.inProgress}}
+	<a href="javascript:;" class="lottery-btn lottery-btn-in">
+		<span class="many"><i class="lottery-ico-per1"></i>已有{{joins}}人参与</span><span class="sep"></span>立即领取
+	</a>
+	{{/if}}
+	{{#if status.notYetStart}}
+	<a href="javascript:;" class="lottery-btn-begin">
+		<span class="many">13小时10分59秒</span><span class="sep"></span>即将开始
+	</a>
+	{{/if}}
+	{{#if status.ended}}
+	<a href="javascript:;" class="lottery-btn-end">
+		<span class="many"><i class="lottery-ico-per1"></i>已有{{joins}}人参与</span><span class="sep"></span>活动结束
+	</a>
+	{{/if}}
+</div>

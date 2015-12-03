@@ -31,7 +31,7 @@ define(function(require, exports, module) {
 				lottery: host + '/lottery/' + lotteryId + '?callback=?',
 				fieldset: host + '/form?callback=?',
 				actInfo: host + '/info?callback=?',
-				lotteryInfo: host + '/lottery/' + lotteryId + '/info?callback=?',
+				lotteryInfo: host + '/lotteryInfo?lotteryId=' + lotteryId + '&callback=?',
 				sms: host + '/lottery/' + lotteryId + '/smsCaptchaCode?callback=?',
 				saveInfo: host + '/form/' + this.option('fieldSetId') + '/saveData?callback=?',
 				checkLogin: host + '/lottery/' + lotteryId + '/chkLogin?callback=?',
@@ -41,7 +41,7 @@ define(function(require, exports, module) {
 			this.getActInfo();
 			this.getTemplates();
 			this.ajaxPrefilter();
-			typeof Passport === 'undefined' && $.getScript('http://ue.17173cdn.com/a/www/index/2015/js/passport.js');
+			
 		},
 
 		/**
@@ -79,7 +79,6 @@ define(function(require, exports, module) {
 					}
 				};
 				  
-				//complete最后执行，所以清除request放在此方法中  
 				var complete = options.complete;
 				options.complete = function(jqXHR, textStatus) {
 					pendingRequests[jqXHR.pendingRequestKey] = null;
@@ -112,12 +111,34 @@ define(function(require, exports, module) {
 	     */
 		getLotteryInfo: function(actInfo){
 			var self = this;
+			function formatTime(){
+
+			}
 			$.getJSON(this.urls.lotteryInfo, function(lotteryData){
 				self.validateType = lotteryData.isVeriCode;
 				self.needLoggedIn = lotteryData.limitCond.indexOf('login') > -1;
-				actInfo.prizeList = lotteryData.prizeList;
+				var info = {
+					prizeList: lotteryData.prizeList,
+					showImg: self.option('showImg'),
+					lotteryBeginTime: lotteryData.startTime,
+					lotteryEndTime: lotteryData.endTime,
+					lotteryBeginTimeFormatted: lotteryData.startTime.substring(0, 16),
+					lotteryEndTimeFormatted: lotteryData.endTime.substring(0, 16)
+				}
+				actInfo = $.extend({}, actInfo, info);
 				self.render(actInfo);
 			});
+		},
+
+	    /**
+	     * @method getInfoFields 获取个人信息表单
+	     * @private
+	     */
+		getInfoFields: function(){
+			var self = this;
+			$.getJSON(self.urls.fieldset, function(data){
+				self.fieldSet = data[0].formField;
+			})
 		},
 
 
@@ -148,7 +169,8 @@ define(function(require, exports, module) {
 				},
 				dataType: 'jsonp',
 				success: function(data){
-					self.renderVote(data);
+					self.voteJSON = data;
+					self.renderVote();
 				}
 			})
 		},
@@ -191,6 +213,7 @@ define(function(require, exports, module) {
 	     * @method doComment 执行评论
 	     * @param  {String}   val 评论内容
 	     * @param  {String}   sid 畅言ID
+	     * @param  {String}   btn 提交按钮的选择器
 	     * @private
 	     */		
 		doComment: function(val, sid){
@@ -200,7 +223,7 @@ define(function(require, exports, module) {
                 topic_url: location.href, //需要评论文章的URL,不可为空
                 client_id: 'cyqvqDTV5' //固定，不要更改
 			}, function(data){
-				data = mapCommentData(data);
+				data = self.mapCommentData(data);
 				var topicId = data.topic_id;
 				$.getJSON(self.urls.commentSubmit, {
                     client_id: 'cyqvqDTV5',//固定，不要更改
@@ -238,6 +261,7 @@ define(function(require, exports, module) {
 	     * @private
 	     */	
 		sendSms: function(mobile){
+			var self = this;
 			$.getJSON(this.urls.sms, {mobile: mobile}, function(data){
 				if(data.result === 'info.sms.failed'){ //TODO: !! 这里改成成功的
 					self.smsSended = true;
@@ -267,47 +291,9 @@ define(function(require, exports, module) {
 						alert(data.msg);
 					}
 				});
-			}		
-		},
-
-	    /**
-	     * @method validateInfoForm 验证个人信息表单
-	     * @return {object} formData 验证通过返回表单数据 {boolean} 不通过返回false
-	     * @private
-	     */			
-		validateInfoForm: function(){
-			var pass = true,
-				formData = {},
-				reMail = /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/,
-				reMobile = /^1\d{10}$/,
-				reQQ = /^[1-9]\d{4,11}$/;
-			$('.lottery-form-input').each(function(){
-				var val = $.trim($(this).find('input').val()),
-					name = $(this).find('input').attr('name'),
-					cName = $(this).prev('.lottery-form-tit').text();
-				if(val === ''){
-					$(this).find('.lottery-form-error').show().text('请填写您的' + cName);
-					pass = false;
-				} else if(name === 'email' && !reMail.test(val)){
-					$(this).find('.lottery-form-error').show().text('请输入正确的' + cName);
-					pass = false;				
-				} else if(name === 'phone' && !reMobile.test(val)){
-					$(this).find('.lottery-form-error').show().text('请输入正确的' + cName);
-					pass = false;
-				} else if(name === 'qq' && !reQQ.test(val)){
-					$(this).find('.lottery-form-error').show().text('请输入正确的' + cName);
-					pass = false;
-				} else{
-					$(this).find('.lottery-form-error').hide().text('');
-					formData[name] = val;
-				}
-			})
-			if(pass){
-				return formData;
-			} else{
-				return false;
 			}
 		},
+
 
 	    /**
 	     * @method animateIt 样式三的抽奖动画
@@ -361,8 +347,7 @@ define(function(require, exports, module) {
 		            moving = false;
 		            clearInterval(timer);
 		            setTimeout(function() {
-		            	$(template(data)).appendTo(self.element);
-		            	$.isFunction(self.copy) && self.copy();
+		            	self.animateEnd(data, template);
 		            }, 500);
 		        }
 		    }
@@ -385,7 +370,7 @@ define(function(require, exports, module) {
 	     * @method doLottery 执行抽奖
 	     * @param  {object}   data 验证码(如有)
 	     * @private
-	     */		
+	     */
 		doLottery: function(data){
 			var self = this,
 				data = data ? data : {};
@@ -393,7 +378,6 @@ define(function(require, exports, module) {
 			$.getJSON(this.urls.lottery, data, function(resultData){
 				resultData.code = '25235236236236';
 				resultData.secretKey = 'secretKey';
-
 
 				resultData.prizeText = self.prizeText;
 				self.handleLotteryResult(resultData);

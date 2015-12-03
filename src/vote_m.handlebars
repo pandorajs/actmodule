@@ -1,0 +1,17 @@
+<div class="lottery-pop" id="vote_pop" style="z-index:9999; top:0; left:0; position:fixed; display:none; ">
+    <section class="lottery-pop-in">
+        <header class="lottery-pop-hd"><h4 class="lottery-tit">完成投票后参与抽奖</h4><a href="#" class="lottery-pop-close"><i class="lottery-ico-close"></i></a></header>
+        {{#each votelist}}
+        <div class="lottery-pop-bd lottery-vote" data-voteid="{{voteid}}" data-votetype="{{voteflag}}">
+            <p class="lottery-tp">{{title}}:</p>
+            <ul class="lottery-votelist">
+                {{#each itemlist}}
+                <li class="lottery-votelist-item" data-itemid="{{itemid}}">{{itemtitle}}</li>
+                {{/each}}
+            </ul>
+            <a href="#" class="lottery-pop-btn-submit" id="submit_vote">提交</a>
+        </div>
+        {{/each}}
+    </section>
+</div>
+<div class="lottery-mask" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:999; display:none;"></div>

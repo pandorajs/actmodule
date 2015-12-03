@@ -1,0 +1,42 @@
+<div class="lottery3 lottery-comm">
+	<h4 class="lottery-tit">{{name}}</h4>
+	<div class="lottery-box">
+		{{#each prizeList}}
+		<div class="lottery-item lottery-item{{index}}" data-prizeId="{{prizeId}}">
+			<img src="{{prizePicture}}" alt="" />
+			<div></div>
+		</div>
+		{{/each}}
+		<div class="lottery-item lottery-item" data-prizeId="0">
+			<img src="../src/img/gn.png" alt="" />
+			<div></div>
+		</div>
+	</div>
+
+	{{#if status.inProgress}}
+	<a href="javascript:;"  title="我要抽奖" class="lottery-btn-cj lottery-btn-in">我要抽奖<i class="lottery-ico-play"></i></a>
+	<div class="lottery-num">
+		<i class="lottery-ico-per2"></i>已有 <span class="lottery-or">{{joins}}</span> 人参与<a href="#"  title="查看中奖名单" class="lottery-btn-winners">查看中奖名单&gt;&gt;</a>
+	</div>
+	{{/if}}
+
+	{{#if status.notYetStart}}
+	<a href="javascript:;"  title="即将开始" class="lottery-btn-cj-begin lottery-btn-begin">即将开始<i class="lottery-ico-play"></i></a>
+	<div class="lottery-num">
+		 <span class="lottery-or many"></span>
+	</div>
+	{{/if}}
+
+	{{#if status.ended}}
+	<a href="javascript:;"  title="活动已结束" class="lottery-btn-cj-end lottery-btn-end">活动已结束</a>
+	<div class="lottery-num">
+		 已有<span class="lottery-or">{{joins}}</span>人参与 <a href="#"  title="查看中奖名单" class="lottery-btn-winners">查看中奖名单&gt;&gt;</a>
+	</div>
+	{{/if}}
+
+
+	<p>活动时间：<br/>{{lotteryBeginTimeFormatted}} - {{lotteryEndTimeFormatted}}</p>
+	<p>活动规则：</p>
+	{{description}}
+	</div>
+</div>

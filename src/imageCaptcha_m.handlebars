@@ -1,0 +1,16 @@
+<div class="lottery-pop" id="captcha_pop" style="z-index:9999; top:0; left:0; position:fixed;">
+	<section class="lottery-pop-in">
+		<header class="lottery-pop-hd"><h4 class="lottery-tit">请完成验证码</h4><a href="#" class="lottery-pop-close"><i class="lottery-ico-close"></i></a></header>
+		<div class="lottery-pop-bd">
+			<div class="lottery-form-item-ex">
+				<input class="lottery-form-input" type="text" id="captcha_input" maxlength="4" value="" placeholder="输入验证码">
+				<div class="lottery-verify-img">
+					<img class="captcha" src="{{captcha}}" alt="">
+				</div>
+			</div>
+			
+		</div>
+		<button type="button" class="lottery-pop-btn-submit" id="submit_image_captcha">提交</button>	
+	</section>
+</div>	
+<div class="lottery-mask" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:999;"></div>

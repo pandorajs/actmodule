@@ -1,0 +1,35 @@
+<div class="lottery-pop{{#if success}} lottery-pop-zjjg{{else}} lottery-pop-wzj{{/if}}" id="result_pop" style="z-index:9999; top:0; left:0; position:fixed; ">
+	<section class="lottery-pop-in">
+		<header class="lottery-pop-hd"><h4 class="lottery-tit">{{#if showError}}提示{{else}}中奖结果{{/if}}</h4><a href="#" class="lottery-pop-close"><i class="lottery-ico-close"></i></a></header>
+		<div class="lottery-pop-bd">
+
+			{{#if success}}
+			<p class="lottery-pop-zjtit">恭喜您！获得了：<br /> 
+				<span class="lottery-tx1">{{prizeName}}</span></p>
+				{{#if code}}
+				<div class="lottery-form-item">
+					<label class="lottery-form-tit">帐号</label>
+					<div class="lottery-form-input">{{code}}</div>
+				</div>
+				{{/if}}
+				{{#if secretKey}}
+				<div class="lottery-form-item">
+					<label class="lottery-form-tit">密码</label>
+					<div class="lottery-form-input">{{secretKey}}</div>
+				</div>
+				{{/if}}
+				<div class="lottery-pop-line"></div>
+				<p class="lottery-pop-info"><span>说明：</span></p>
+				{{{prizeText}}}
+			{{/if}}
+
+			{{#if failed}}
+			<p class="lottery-pop-zjtit lottery-tx1">很抱歉，您未能中奖！<br /></p>
+			{{/if}}
+
+			{{#if showError}}
+			<p class="lottery-sub-tit">{{msg}}</p>
+			{{/if}}
+		</div>
+	</section>
+</div>

@@ -48,7 +48,8 @@
   "family": "pandora",
   "spm": {
     "output": [
-      "actmodule.js"
+      "actmodule.js",
+      "actmodule_m.js"
     ],
     "alias": {
       "$": "$",
