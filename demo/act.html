@@ -22,15 +22,6 @@
     });
     </script>
 
-    <style type="text/css">
-        .resend{ display: none;}
-        .lottery-btn-sendcode-disabled .resend{ display: inline;}
-        .lottery-btn-sendcode-disabled .send{ display: none;}
-        .lottery-item{ position: relative;}
-        .lottery-item div{ width: 110px; height: 90px; position: absolute; background: rgba(255,255,255,.6); top: 0; left: 0; display: none;}
-        .blink div{ display: block !important;}
-        #act_module .prize-text{display: none;}
-    </style>
 </head>
 
 <body>
@@ -51,12 +42,13 @@
             actId: 4959, //活动ID
             lotteryId: 62, //抽奖ID
             style: 3, //样式
-            voteId: 10132, //投票ID
+            // voteId: 10132, //投票ID
             // needComment: true, //是否需要评论
-            commentTip: '这里你要评论下', //评论导语
+            // commentTip: '这里你要评论下', //评论导语
             showImg: 1,
             fieldSetId: 39, //收集信息的表单ID
-            needInfo: true //是否需要填写个人信息
+            winnerUrl: 'http://www.163.com'
+            // needInfo: true //是否需要填写个人信息
         });
     });
 </script>

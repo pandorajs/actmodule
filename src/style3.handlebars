@@ -1,52 +1,53 @@
-<div class="lottery lottery3">
-	<div class="lottery-hd">
-		<h4 class="lottery-tit">{{name}}</h4>
+<div class="zq-actcompt zq-actcompt3">
+	<div class="zq-actcompt-hd">
+		<h4 class="zq-actcompt-tit">{{name}}</h4>
 	</div>
-	<div class="lottery-bd">
-		<div class="lottery3-c1 lottery-fl" style="width:342px;">
-			<div class="lottery-lottery">
+	<div class="zq-actcompt-bd">
+		<div class="zq-actcompt3-c1 zq-actcompt-fl" style="width:342px;">
+			<div class="zq-actcompt-box">
 
 				{{#each prizeList}}
-				<div class="lottery-item lottery-item{{index}}" data-prizeId="{{prizeId}}">
+				<div class="zq-actcompt-item zq-actcompt-item{{index}}" data-prizeId="{{prizeId}}">
 					<img src="{{prizePicture}}" width="110" height="90" alt="">
 					<div></div>
 				</div>
 				{{/each}}
-				<div class="lottery-item lottery-item" data-prizeId="0">
-					<img src="../src/img/gn.png" width="110" height="90" alt="">
+				<div class="zq-actcompt-item" data-prizeId="0">
+					<img src="http://ue.17173cdn.com/a/module/zq/2015/act-lottery/img/gn.png" width="110" height="90" alt="">
 					<div></div>
 				</div>
+
 			</div>
 
 			{{#if status.inProgress}}
-			<a href="#" class="lottery-btn-cj {{status.className}}">我要抽奖<i class="lottery-ico lottery-ico-play"></i></a>
-			<div class="lottery-oz">
-				<span class="lottery-fl">已有<span class="lottery-or lottery-fb">0</span>人参与</span>
-				<a href="#" target="_blank" title="查看中奖名单" class="lottery-fr lottery-btn-winners ">查看中奖名单&gt;&gt;</a>
+			<a href="#lottery" title="我要抽奖" class="zq-actcompt-btn-cj" id="zq_actcompt_in_progress">我要抽奖<i class="zq-actcompt-ico zq-actcompt-ico-play"></i></a>
+			<div class="zq-actcompt-oz">
+				<span class="zq-actcompt-fl">已有<span class="zq-actcompt-or zq-actcompt-fb">{{joins}}</span>人参与</span>
+				<a href="#" target="_blank" title="查看中奖名单" class="zq-actcompt-fr zq-actcompt-btn-winners ">查看中奖名单&gt;&gt;</a>
 			</div>
 			{{/if}}
 
 			{{#if status.notYetStart}}
-			<span class="lottery-btn-cj lottery-btn-cjw">即将开始<i class="lottery-ico lottery-ico-play"></i></span>
-			<p class="lottery-p lottery-or"></p>
+			<span title="即将开始" class="zq-actcompt-btn-cj zq-actcompt-btn-cjw" id="zq_actcompt_not_yet_start">即将开始<i class="zq-actcompt-ico zq-actcompt-ico-play"></i></span>
+			<p class="zq-actcompt-p zq-actcompt-or"></p>
 			{{/if}}
 
 			{{#if status.ended}}
-			<span class="lottery-btn-cj lottery-btn-cjw">活动已结束<i class="lottery-ico lottery-ico-play"></i></span>
-			<p class="lottery-p">已有<span class="lottery-or lottery-fb">0</span>人参与</p>
+			<span title="活动已结束" class="zq-actcompt-btn-cj zq-actcompt-btn-cjw">活动已结束<i class="zq-actcompt-ico zq-actcompt-ico-play"></i></span>
+			<p class="zq-actcompt-p">已有<span class="zq-actcompt-or zq-actcompt-fb">{{joins}}</span>人参与</p>
 			{{/if}}
 
-		</div>
-		<div class="lottery3-c2">
-			<div class="lottery-info">
-				<h4 class="lottery-tits">活动时间：</h4>
-				<p class="lottery-p">{{lotteryBeginTimeFormatted}} 至 {{lotteryEndTimeFormatted}}</p>
+		</div>	
+
+
+		<div class="zq-actcompt3-c2">
+			<div class="zq-actcompt-info">
+				<h4 class="zq-actcompt-tits">活动时间：</h4>
+				<p class="zq-actcompt-p">{{lotteryBeginTimeFormatted}} 至 {{lotteryEndTimeFormatted}}</p>
 			</div>
-			<div class="lottery-info">
-				<h4 class="lottery-tits">活动规则：</h4>
-				<p class="lottery-p">
-					{{description}}
-				</p>
+			<div class="zq-actcompt-info">
+				<h4 class="zq-actcompt-tits">活动规则：</h4>
+				{{description}}
 			</div>
 		</div>
 		

@@ -41,7 +41,6 @@ define(function(require, exports, module) {
 			this.getActInfo();
 			this.getTemplates();
 			this.ajaxPrefilter();
-			
 		},
 
 		/**
@@ -176,6 +175,21 @@ define(function(require, exports, module) {
 		},
 
 	    /**
+	     * @method initAct 取投票和信息字段
+	     * @private
+	     */
+		initAct: function(){
+			//如果需要投票, 取回投票数据
+			if(this.option('voteId')){
+				this.getVoteInfo();
+			} 
+			//如果需要填写个人信息，取回个人信息表单项
+			if(this.option('needInfo')){
+				this.getInfoFields();
+			}
+		},
+
+	    /**
 	     * @method doVote 执行投票
 	     * @param  {object}   voteData 投票数据
 	     * @private
@@ -263,7 +277,7 @@ define(function(require, exports, module) {
 		sendSms: function(mobile){
 			var self = this;
 			$.getJSON(this.urls.sms, {mobile: mobile}, function(data){
-				if(data.result === 'info.sms.failed'){ //TODO: !! 这里改成成功的
+				if(data.result === 'info.sms.success'){ //TODO: !! 这里改成成功的
 					self.smsSended = true;
 					self.smsSendSuccess();
 				} else{
@@ -302,12 +316,12 @@ define(function(require, exports, module) {
 	     * @param  {object}   template 中奖结果弹窗的模板
 	     * @private
 	     */	
-		animateIt: function(prizeId, data, template){
+		animateIt: function(prizeId, data, template, el){
 			var self = this;
 			var moving = false;
 		    var timer = null;
 		    var index = 0;  //起始位置
-		    var obj = $('.lottery-item');
+		    var obj = $(el);
 		    var len = obj.length;
 		    var circle = 10;  //转10圈                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
 		    var stopAt;      //最终奖品位置
@@ -376,9 +390,8 @@ define(function(require, exports, module) {
 				data = data ? data : {};
 
 			$.getJSON(this.urls.lottery, data, function(resultData){
-				resultData.code = '25235236236236';
-				resultData.secretKey = 'secretKey';
-
+				// resultData.code = '25235236236236';
+				// resultData.secretKey = 'secretKey';
 				resultData.prizeText = self.prizeText;
 				self.handleLotteryResult(resultData);
 			});
@@ -392,7 +405,7 @@ define(function(require, exports, module) {
 		handleLotteryResult: function(data){
 			
 			//这里把抽奖结果分为三类：1. 正常抽奖 2. 用户端错误 3.系统端错误
-			//对应的操作：1. 弹结果框 2.弹错误信息，保留输入框 3.弹错误信息，关闭输入框
+			//对应的操作：1. 弹结果框, 关输入框 2. 弹错误信息，保留输入框 3.弹错误信息，关闭输入框
 			//所有抽奖结果文档见: http://p.act.dev.17173.com/docs/document/V1/LotteryController
 			var resultType;
 

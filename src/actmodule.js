@@ -7,7 +7,6 @@ define(function(require, exports, module) {
 	var $ = window.$ = require('$'),
 		Core = require('./core'),
 		Utils = require('./utils'),
-		importStyle = require('./css/layout.css'),
 		ZeroClipboard = window.ZeroClipboard = require('./jquery.zclip');
 
 	/**
@@ -41,22 +40,25 @@ define(function(require, exports, module) {
 
 		defaults: {
 			delegates: {
-				'click .lottery-btn-in': function(e){
+				'click #zq_actcompt_in_progress': function(e){
 					if($(e.currentTarget).hasClass('disabled')){
 						return;
 					}
 					this.startFromHere();
 				},
 				'click #submit_vote': function(e){
+					if($(e.currentTarget).hasClass('disabled')){
+						return;
+					}
 					this.submitVote(e.currentTarget);
 				},
-				'click .lottery-pop-close': function(e){
-					$('.lottery-pop, .lottery-mask').hide();
+				'click .zq-actcompt-pop-close': function(e){
+					this.closePopup(e);
 				},
-				'click .captcha': function(e){
+				'click #za_actcompt_captcha': function(e){
 					this.imageCaptchaRefresh();
 				},
-				'click .lottery-votelist-item': function(e){
+				'click .zq-actcompt-votelist-item': function(e){
 					this.handleVoteOptions(e.currentTarget);
 				},
 				'click #submit_image_captcha': function(e){
@@ -77,11 +79,11 @@ define(function(require, exports, module) {
 				'click #submit_sms': function(e){
 					this.submitSms();
 				},
-				'keyup .lottery-form-input input': function(e){
-					$(e.currentTarget).next('div').text('').hide();
+				'keyup .zq-actcompt-form-input input': function(e){
+					$(e.currentTarget).parents('.zq-actcompt-form-item').next('.zq-actcompt-form-error').hide().text('');
 				},
 				'click #cancel_submit_info': function(e){
-					$(e.currentTarget).parents('.lottery-pop').find('.lottery-pop-close').trigger('click');
+					$(e.currentTarget).parents('.zq-actcompt-pop').find('.lottery-pop-close').trigger('click');
 				},
 				'click #submit_info': function(e){
 					this.submitInfo();
@@ -91,6 +93,7 @@ define(function(require, exports, module) {
 		setup: function(){
 			ActModule.superclass.setup.apply(this);
 			typeof Passport === 'undefined' && $.getScript('http://ue.17173cdn.com/a/www/index/2015/js/passport.js');
+			$('<link rel="stylesheet" href="http://ue.17173cdn.com/a/module/zq/2015/act-lottery/css/layout.css">').appendTo("head");
 			this.prizeText = $(this.element).find('.prize-text').html();
 			$(this.element).html('');
 		},
@@ -101,11 +104,28 @@ define(function(require, exports, module) {
 	     *
 	     */
 		getTemplates: function(){
-			importStyle();
 			this.template1 = require('./style1.handlebars');
 			this.template2 = require('./style2.handlebars');
 			this.template3 = require('./style3.handlebars');
 			this.template4 = require('./style4.handlebars');
+		},
+
+		/**
+		 * @method closePopup 关闭弹出框
+		 * @param  {object}   e 事件对象
+		 */	
+		closePopup: function(e){
+			var $popup = $(e.currentTarget).parent(),
+				$mask = $popup.next('.zq-actcompt-pop-mask');
+			$popup.remove();
+			$mask.remove();
+
+			// if($popup.attr('id') === 'result_pop'){
+			// 	$popup.remove();
+			// 	$('.zq-actcompt-pop-mask').remove();
+			// } else{
+			// 	$(e.currentTarget).parent().hide().next('.zq-actcompt-pop-mask').hide();
+			// }
 		},
 
 		/**
@@ -119,25 +139,16 @@ define(function(require, exports, module) {
 				nowUnix = ~~($.now() / 1000);
 			if(nowUnix < beginTimeUnix){
 				return {
-					text: '即将开始',
-					className: 'lottery-btn-begin',
-					html: '<span class="lottery-or"></span>',
 					timeLeft: beginTimeUnix - nowUnix,
 					notYetStart: true
 				};
 			}
 			if(nowUnix > endTimeUnix){
 				return {
-					text: '活动结束',
-					className: 'lottery-btn-end',
-					html: '已有<span class="lottery-or lottery-fb">0</span>人参与',
 					ended: true
 				};
 			}
 			return {
-				text: '立即领取',
-				className: 'lottery-btn-in',
-				html: '已有<span class="lottery-or lottery-fb">0</span>人参与',
 				inProgress: true
 			};
 		},
@@ -165,37 +176,36 @@ define(function(require, exports, module) {
 					break;
 			}
 
-
 			//活动进行中 
 			if(actInfo.status.inProgress){
-				self.element.find('.lottery-or').text(actInfo.joins);
-				//如果需要投票, 取回投票数据
-				if(self.option('voteId')){
-					self.getVoteInfo();
-				} 
-				//如果需要填写个人信息，取回个人信息表单项
-				if(self.option('needInfo')){
-					self.getInfoFields();
-					// $.getJSON(self.urls.fieldset, function(data){
-					// 	self.fieldSet = data[0].formField;
-					// })
-				}
+				self.initAct();
 			}
-			//活动结束
-			else if(actInfo.status.ended){
-				self.element.find('.lottery-or').text(actInfo.joins);
-			} 
 			//活动未开始
-			else{
-				self.element.find('.lottery-or').text(Utils.formatSeconds(actInfo.status.timeLeft));
+			else if(actInfo.status.notYetStart){
+				self.element.find('.zq-actcompt-or').text(Utils.formatSeconds(actInfo.status.timeLeft));
 				var timeInterval = setInterval(function(){
 					var timeLeft = self.checkStatus(actInfo.lotteryBeginTime, actInfo.lotteryEndTime).timeLeft;
+					timeLeft--;
+					self.element.find('.zq-actcompt-or').text(Utils.formatSeconds(timeLeft));
 					if(timeLeft <= 0){
 						clearInterval(timeInterval);
-						self.element.find('.lottery-btn-begin').removeClass('lottery-btn-begin').addClass('lottery-btn-in').text('立即领取');
-						self.element.find('.lottery-state-tt').html('已有<span class="lottery-or lottery-fb">0</span>人参与');
+						self.element.find('#zq_actcompt_not_yet_start').attr('id', 'zq_actcompt_in_progress').text('立即领取');
+						switch(self.option('style')){
+							case 1:
+								$('.zq-actcompt-state-tt').html('已有<span class="zq-actcompt-or zq-actcompt-fb">0</span>人参与');
+								break;
+							case 2:
+								$('.zq-actcompt-state-tt').html('已有<span class="zq-actcompt-or zq-actcompt-fb">0</span>人参与');
+								break;
+							case 3:
+								var winnerHtml = self.option('winnerUrl') ? '<a href="' + self.option('winnerUrl') + '" target="_blank" title="查看中奖名单" class="zq-actcompt-fr zq-actcompt-btn-winners ">查看中奖名单&gt;&gt;</a>' : '';
+								$('.zq-actcompt-or').replaceWith('<div class="zq-actcompt-oz"><span class="zq-actcompt-fl">已有<span class="zq-actcompt-or zq-actcompt-fb">0</span>人参与</span>' + winnerHtml + '</div>');
+								break;
+							case 4:
+								$('.zq-actcompt-p').html('已有<span class="zq-actcompt-or zq-actcompt-fb">0</span>人参与');
+								break;
+						}
 					}
-					self.element.find('.lottery-or').text(Utils.formatSeconds(timeLeft));
 				}, 1000);
 			}
 		},
@@ -204,7 +214,10 @@ define(function(require, exports, module) {
 		 * @method showVotePop 显示投票弹窗
 		 */
 		showVotePop: function(){
-			$('#vote_pop, .lottery-mask').show();
+			if($('#vote_pop').length < 1){
+				this.renderVote();
+			}
+			$('#vote_pop, .zq-actcompt-pop-mask').show();
 		},
 
 		/**
@@ -222,7 +235,7 @@ define(function(require, exports, module) {
 		 */				
 		handleVoteOptions: function(option){
 			//如果是单选
-			if($(option).parents('.lottery-vote').data('votetype') == 0){
+			if($(option).parents('[data-voteid]').data('votetype') == 0){
 				if(!$(option).hasClass('on')){
 					$(option).addClass('on').siblings().removeClass('on');
 				}
@@ -239,30 +252,30 @@ define(function(require, exports, module) {
 		 */			
 		submitVote: function(submit){
 			var self = this;
-			var $vote = $(submit).parents('.lottery-vote');
+			var $vote = $(submit).parents('[data-voteid]');
 			if($vote.find('.on').length < 1){
 				alert('请选择一个选项');
-			} else{
-				var voteid = $vote.data('voteid'),
-					voteitem = [];
-				$vote.find('.on').each(function(){
-					voteitem.push($(this).data('itemid'));
-				});
-				var data = {
-					voteitem: voteitem.join(),
-					voteid: voteid
-				};
-				self.doVote(data);
+				return;
 			}
+			$(submit).addClass('disabled').text('提交中...');
+			var voteid = $vote.data('voteid'),
+				voteitem = [];
+			$vote.find('.on').each(function(){
+				voteitem.push($(this).data('itemid'));
+			});
+			var data = {
+				voteitem: voteitem.join(),
+				voteid: voteid
+			};
+			self.doVote(data);
 		},
 
 		/**
 		 * @method voteSuccess 投票成功的回调函数，提交后隐藏投票弹窗，然后检查是否登录
 		 */				
 		voteSuccess: function(){
-			$('#vote_pop, .lottery-mask').hide();
+			$('#vote_pop, .zq-actcompt-pop-mask').remove();
 			this.needLoggedIn ? this.checkLogin() : this.checkValidate();
-			// this.checkLogin();
 		},
 
 		/**
@@ -272,12 +285,12 @@ define(function(require, exports, module) {
 			var self = this,
 				template = require('./comment.handlebars'),
 				data = {commentTip: self.option('commentTip')};
-			$('#comment_pop').length ? $('#comment_pop, .lottery-mask').show() : $(template(data)).appendTo(this.element);
+			$('#comment_pop').length ? $('#comment_pop, .zq-actcompt-pop-mask').show() : $(template(data)).appendTo(this.element);
 		},
 
 		/**
 		 * @method submitComment 提交评论
-		 */		
+		 */
 		submitComment: function(){
 			var val = $.trim($('#comment_text').val()),
 				sid = $('#SOHUCS').attr('sid');
@@ -292,9 +305,8 @@ define(function(require, exports, module) {
 		 * @method commentSuccess 评论成功的回调函数, 删除评论弹窗并检查登录状态
 		 */	
 		commentSuccess: function(){
-			$('#comment_pop, .lottery-mask').remove();
+			$('#comment_pop, .zq-actcompt-pop-mask').remove();
 			this.needLoggedIn ? this.checkLogin() : this.checkValidate();
-			// this.checkLogin();
 		},
 
 		/**
@@ -305,8 +317,6 @@ define(function(require, exports, module) {
 			if(this.isLoggedIn()){
 				this.checkValidate();
 			} else{
-
-
 				var loginSuccessHandler = function(){
 					self.checkValidate();
 				}
@@ -381,7 +391,7 @@ define(function(require, exports, module) {
 		 * @method submitInfoSuccess 个人信息提交成功的回调
 		 */			
 		submitInfoSuccess: function(){
-			$('#info_pop, .lottery-mask').remove();
+			$('#info_pop, .zq-actcompt-pop-mask').remove();
 			this.doLottery();
 		},
 
@@ -395,24 +405,25 @@ define(function(require, exports, module) {
 				reMail = /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/,
 				reMobile = /^1\d{10}$/,
 				reQQ = /^[1-9]\d{4,11}$/;
-			$('.lottery-form-input').each(function(){
+			$('.zq-actcompt-form-input').each(function(){
 				var val = $.trim($(this).find('input').val()),
 					name = $(this).find('input').attr('name'),
-					cName = $(this).prev('.lottery-form-tit').text();
+					cName = $(this).prev('.zq-actcompt-form-tit').text(),
+					$error = $(this).parent().next('.zq-actcompt-form-error');
 				if(val === ''){
-					$(this).find('.lottery-form-error').show().text('请填写您的' + cName);
+					$error.show().text('请填写您的' + cName);
 					pass = false;
 				} else if(name === 'email' && !reMail.test(val)){
-					$(this).find('.lottery-form-error').show().text('请输入正确的' + cName);
+					$error.show().text('请输入正确的' + cName);
 					pass = false;				
 				} else if(name === 'phone' && !reMobile.test(val)){
-					$(this).find('.lottery-form-error').show().text('请输入正确的' + cName);
+					$error.show().text('请输入正确的' + cName);
 					pass = false;
 				} else if(name === 'qq' && !reQQ.test(val)){
-					$(this).find('.lottery-form-error').show().text('请输入正确的' + cName);
+					$error.show().text('请输入正确的' + cName);
 					pass = false;
 				} else{
-					$(this).find('.lottery-form-error').hide().text('');
+					$error.hide().text('');
 					formData[name] = val;
 				}
 			});
@@ -431,14 +442,20 @@ define(function(require, exports, module) {
 					captcha: this.host + '/lottery/' + this.option('lotteryId') + '/captchaCode'
 				},
 				template = require('./imageCaptcha.handlebars');
-			$(template(data)).appendTo(this.element);
+			if($('#captcha_pop').length){
+				this.imageCaptchaRefresh();
+				$('#captcha_pop, .zq-actcompt-pop-mask').show();
+			} else{
+				$(template(data)).appendTo(this.element);
+			}
+			
 		},
 
 		/**
 		 * @method imageCaptchaRefresh 刷新图片验证码
 		 */			
 		imageCaptchaRefresh: function(){
-			$('.captcha').attr('src', '').attr('src', this.host + '/lottery/' + this.option('lotteryId') + '/captchaCode');
+			$('#za_actcompt_captcha').attr('src', '').attr('src', this.host + '/lottery/' + this.option('lotteryId') + '/captchaCode');
 		},
 
 		/**
@@ -466,11 +483,11 @@ define(function(require, exports, module) {
 			}
 
 			var template = require('./result.handlebars');
-			$('.lottery-pop, .lottery-mask').remove();
+			$('.zq-actcompt-pop, .zq-actcompt-pop-mask').remove();
 
 			if(this.option('style') === 3 && resultType === 1){
-				$('.lottery-btn-in').addClass('disabled');
-				this.animateIt(data.prizeId, data, template);
+				$('#zq_actcompt_in_progress').addClass('disabled');
+				this.animateIt(data.prizeId, data, template, '.zq-actcompt-item');
 			} else{
 	        	$(template(data)).appendTo(this.element);
 	        	this.copy();
@@ -480,7 +497,7 @@ define(function(require, exports, module) {
 		animateEnd: function(data, template){
         	$(template(data)).appendTo(this.element);
         	this.copy();
-        	$('.lottery-btn-in').removeClass('disabled');
+        	$('#zq_actcompt_in_progress').removeClass('disabled');
 		},
 
 		/**
@@ -490,29 +507,30 @@ define(function(require, exports, module) {
 			if(window.clipboardData){
 				$('#btn_copy_code').click(function(){
 					window.clipboardData.setData('Text', $('#act_module_code').val());
-					alert('已复制到剪贴板。');
+					alert('已复制到剪贴板: ' + $('#act_module_code').val());
 				})
 				$('#btn_copy_secretkey').click(function(){
 					window.clipboardData.setData('Text', $('#act_module_secretkey').val());
-					alert('已复制到剪贴板。');
+					alert('已复制到剪贴板: ' + $('#act_module_secretkey').val());
 				})
 			} else{
 				$('#btn_copy_code').zclip({
-					path: '../src/ZeroClipboard.swf',
+					path: '/src/ZeroClipboard.swf',
 					copy: function(){
-						return $('#act_module_code').val()
+						return $('#act_module_code').val();
 					},
 					afterCopy: function(){
-						alert('已复制到剪贴板。');
+						alert('已复制到剪贴板: ' + $('#act_module_code').val());
 					}
 				});
 				$('#btn_copy_secretkey').zclip({
-					path: '../src/ZeroClipboard.swf',
+					// path: 'http://ue.17173cdn.com/a/lib/clipboard/ZeroClipboard.swf',
+					path: '/src/ZeroClipboard.swf',
 					copy: function(){
 						return $('#act_module_secretkey').val();
 					},
 					afterCopy: function(){
-						alert('已复制到剪贴板。');
+						alert('已复制到剪贴板: ' + $('#act_module_secretkey').val());
 					}
 				});			
 			}

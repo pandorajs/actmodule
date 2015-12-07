@@ -23,14 +23,15 @@
     </script>
 
     <style type="text/css">
-        #send_sms .resend{ display: none;}
-        .lottery-form-error{ display: none;}
-        .lottery-btn-sendcode-disabled .resend{ display: inline !important;}
-        .lottery-btn-sendcode-disabled .send{ display: none;}
-        .lottery-item{ position: relative;}
-        .lottery-item div{ width: 110px; height: 90px; position: absolute; background: rgba(255,255,255,.6); top: 0; left: 0; display: none;}
-        .blink div{ display: block !important;}
+        #zq_actcompt_resend_sms{ display: none;}
+        .sms-send-success #zq_actcompt_resend_sms{ display: inline !important;}
+        .sms-send-success #zq_actcompt_send_sms{ display: none;}
         #act_module .prize-text{display: none;}
+        .zq-actcompt-form-error{ display: none;}
+        .zq-actcompt-item{ position: relative;}
+        .zq-actcompt-item div{ width: 100%; height: 100%; position: absolute; background: rgba(255,255,255,.6); top: 0; left: 0; display: none;}
+        .blink div{ display: block !important;}
+        
     </style>
 </head>
 
@@ -54,13 +55,13 @@
             element: '#act_module',
             actId: 4959, //活动ID
             lotteryId: 62, //抽奖ID
-            style: 1, //样式
-            voteId: 10132, //投票ID
+            style: 3, //样式
+            // voteId: 10132, //投票ID
             // needComment: true, //是否需要评论
-            commentTip: '这里你要评论下', //评论导语
+            // commentTip: '这里你要评论下', //评论导语
             showImg: 1,
             fieldSetId: 39, //收集信息的表单ID
-            needInfo: true //是否需要填写个人信息
+            // needInfo: true //是否需要填写个人信息
         });
     });
 </script>

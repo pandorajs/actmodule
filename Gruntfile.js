@@ -94,7 +94,7 @@ module.exports = function(grunt) {
     copy: {
       doc: {
         files: [{
-          expand: true,
+          expand: false,
           cwd: 'doc/',
           src: ['**'],
           dest: 'gh-pages/'
@@ -112,7 +112,7 @@ module.exports = function(grunt) {
 
     transport: {
       options: {
-        debug: true,
+        debug: false,
         idleading: '<%= idleading %>',
         alias: '<%= pkg.spm.alias %>'
       },
@@ -128,14 +128,14 @@ module.exports = function(grunt) {
 
     concat: {
       options: {
-        debug: true,
+        debug: false,
         include: 'relative'
       },
       src: {
         files: [{
           expand: true,
           cwd: '.build/',
-          src: ['*vote*.js','support*.js'],
+          src: ['actmodule.js', 'actmodule_m.js'],
           dest: 'dist/'
         }]
       }
