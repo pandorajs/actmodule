@@ -415,6 +415,11 @@ define(function(require, exports, module) {
 					data.failed = true;
 					resultType = 1;
 					break;
+				case 'info.prize.sendEnd': //中奖了但是奖品发完了。按未中奖处理
+					data.prizeId = 0;
+					data.failed = true;
+					resultType = 1;
+					break;
 				case 'info.lottery.success': //中奖
 					data.success = true;
 					resultType = 1;
@@ -435,7 +440,6 @@ define(function(require, exports, module) {
 
 			this.done(data, resultType);
 		}
-
 	});
 
 	module.exports = Core;

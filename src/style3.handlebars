@@ -23,7 +23,9 @@
 			<a href="#lottery" title="我要抽奖" class="zq-actcompt-btn-cj" id="zq_actcompt_in_progress">我要抽奖<i class="zq-actcompt-ico zq-actcompt-ico-play"></i></a>
 			<div class="zq-actcompt-oz">
 				<span class="zq-actcompt-fl">已有<span class="zq-actcompt-or zq-actcompt-fb">{{joins}}</span>人参与</span>
-				<a href="#" target="_blank" title="查看中奖名单" class="zq-actcompt-fr zq-actcompt-btn-winners ">查看中奖名单&gt;&gt;</a>
+				{{#if status.winnerUrl}}
+				<a href="{{status.winnerUrl}}" target="_blank" title="查看中奖名单" class="zq-actcompt-fr zq-actcompt-btn-winners ">查看中奖名单&gt;&gt;</a>
+				{{/if}}
 			</div>
 			{{/if}}
 

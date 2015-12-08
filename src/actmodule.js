@@ -136,7 +136,9 @@ define(function(require, exports, module) {
 		checkStatus: function(beginTime, endTime){
 			var beginTimeUnix = Utils.datetimeToUnix(beginTime),
 				endTimeUnix = Utils.datetimeToUnix(endTime),
-				nowUnix = ~~($.now() / 1000);
+				nowUnix = ~~($.now() / 1000),
+				winnerUrl = this.option('winnerUrl') ? this.option('winnerUrl') : false;
+
 			if(nowUnix < beginTimeUnix){
 				return {
 					timeLeft: beginTimeUnix - nowUnix,
@@ -145,11 +147,13 @@ define(function(require, exports, module) {
 			}
 			if(nowUnix > endTimeUnix){
 				return {
-					ended: true
+					ended: true,
+					winnerUrl: winnerUrl
 				};
 			}
 			return {
-				inProgress: true
+				inProgress: true,
+				winnerUrl: winnerUrl
 			};
 		},
 
@@ -185,7 +189,6 @@ define(function(require, exports, module) {
 				self.element.find('.zq-actcompt-or').text(Utils.formatSeconds(actInfo.status.timeLeft));
 				var timeInterval = setInterval(function(){
 					var timeLeft = self.checkStatus(actInfo.lotteryBeginTime, actInfo.lotteryEndTime).timeLeft;
-					timeLeft--;
 					self.element.find('.zq-actcompt-or').text(Utils.formatSeconds(timeLeft));
 					if(timeLeft <= 0){
 						clearInterval(timeInterval);

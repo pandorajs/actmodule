@@ -115,7 +115,8 @@ define(function(require, exports, module) {
 		checkStatus: function(beginTime, endTime){
 			var beginTimeUnix = Utils.datetimeToUnix(beginTime),
 				endTimeUnix = Utils.datetimeToUnix(endTime),
-				nowUnix = ~~($.now() / 1000);
+				nowUnix = ~~($.now() / 1000),
+				winnerUrl = this.option('winnerUrl') ? this.option('winnerUrl') : false;
 			if(nowUnix < beginTimeUnix){
 				return {
 					timeLeft: beginTimeUnix - nowUnix,
@@ -124,11 +125,13 @@ define(function(require, exports, module) {
 			}
 			if(nowUnix > endTimeUnix){
 				return {
-					ended: true
+					ended: true,
+					winnerUrl: winnerUrl
 				};
 			}
 			return {
-				inProgress: true
+				inProgress: true,
+				winnerUrl: winnerUrl
 			};
 		},
 
@@ -152,7 +155,6 @@ define(function(require, exports, module) {
 					break;
 			}
 
-
 			//活动进行中 
 			if(actInfo.status.inProgress){
 				self.initAct();
@@ -160,15 +162,28 @@ define(function(require, exports, module) {
 			//活动未开始
 			else if(actInfo.status.notYetStart){
 				self.element.find('.many').text(Utils.formatSeconds(actInfo.status.timeLeft));
+
 				var timeInterval = setInterval(function(){
 					var timeLeft = self.checkStatus(actInfo.lotteryBeginTime, actInfo.lotteryEndTime).timeLeft;
+					
 					if(timeLeft <= 0){
 						clearInterval(timeInterval);
-						var btnHtml = self.option('style') == 1 ? '立即<br>领取' : '立即领取';
-						self.element.find('#zq_actcompt_not_yet_start').attr('id', 'zq_actcompt_in_progress').find('.text').html(btnHtml);
-						self.element.find('#zq_actcompt_in_progress .many').text('已有0人参与');
+						switch(self.option('style')){
+							case 1:
+								self.element.find('#zq_actcompt_not_yet_start').replaceWith('<a href="javascript:;" class="zq-actcompt-btn-get" id="zq_actcompt_in_progress"><span class="text">立即<br />领取</span><span class="many">已有0人参与</span></a>');
+								self.element.find('.zq-actcompt1-begin').attr('class', 'zq-actcompt1 zq-actcompt');
+								break;
+							case 2:
+								self.element.find('#zq_actcompt_not_yet_start').replaceWith('<a href="javascript:;" class="zq-actcompt-btn" id="zq_actcompt_in_progress"><span class="many"><i class="zq-actcompt-ico-per1"></i>已有0人参与</span><span class="sep"></span>立即领取</a>');
+								break;
+							case 3:
+								var winnerHtml = self.option('winnerUrl') ? '<a href="' + self.option('winnerUrl') + '"  title="查看中奖名单" class="zq-actcompt-btn-winners">查看中奖名单&gt;&gt;</a>' : '';
+								$('#zq_actcompt_not_yet_start').replaceWith('<a href="javascript:;"  title="" class="zq-actcompt-btn-cj" id="zq_actcompt_in_progress">我要抽奖<i class="zq-actcompt-ico-play"></i></a>');
+								$('.zq-actcompt-num').html('<i class="zq-actcompt-ico-per2"></i>已有 <span class="zq-actcompt-or">0 </span>人参与' + winnerHtml);
+								break;
+						}
 					}
-					self.element.find('.many').text(Utils.formatSeconds(timeLeft));
+					
 				}, 1000);
 			}
 		},
