@@ -1,6 +1,6 @@
 define(function(require, exports, module) {
 	/**
-	* 通用活动组件PC端
+	* 通用活动组件移动端 TODO:合并PC和移动端
 	* @module ActModule
 	*/
 
@@ -83,6 +83,10 @@ define(function(require, exports, module) {
 				},
 				'keyup .zq-actcompt-form-input': function(e){
 					$(e.currentTarget).parent().next('.zq-actcompt-form-error').hide().find('span').text('');
+				},
+				'click #btn_fill_info': function(){
+					this.element.find('#result_pop, .zq-actcompt-pop-mask').remove();
+					this.showInfoPop();
 				}
 			}
 		},
@@ -92,19 +96,17 @@ define(function(require, exports, module) {
 			$.getScript('http://passport.17173.com/themes/default/static/js/topbar/topbar.js', function(){
 				window.wap.init();
 			});
-			this.prizeText = $(this.element).find('.prize-text').html();
 			$(this.element).html('');
 		},
 
-
 	    /**
-	     * @method getTemplates 引入样式表及获取4个样式的模板
+	     * @method getTemplates 引入样式表及获取3个样式的模板
 	     *
 	     */
 		getTemplates: function(){
-			this.template1 = require('./style1_m.handlebars');
-			this.template2 = require('./style2_m.handlebars');
-			this.template3 = require('./style3_m.handlebars');
+			this.template1 = require('./template/m/style1_m.handlebars');
+			this.template2 = require('./template/m/style2_m.handlebars');
+			this.template3 = require('./template/m/style3_m.handlebars');
 		},
 
 		/**
@@ -131,17 +133,20 @@ define(function(require, exports, module) {
 			}
 			return {
 				inProgress: true,
+				timeLeft: 0,
 				winnerUrl: winnerUrl
 			};
 		},
 
 		/**
-		 * @method render 渲染组件
+		 * @method render 渲染组件。 活动开始结束时间说明：1.人工抽奖的情况下，读取活动信息接口里的beginTime/endTime; 2.即时抽奖读取抽奖信息接口里的 startTime/endTime
 		 * @param  {object}   actInfo 活动数据
 		 */		
 		render: function(actInfo){
-			var self = this;
-			actInfo.status = self.checkStatus(actInfo.lotteryBeginTime, actInfo.lotteryEndTime);
+			var self = this,
+				startTime = this.option('collectInfo') ? actInfo.beginTime : actInfo.lotteryBeginTime,
+				endTime = this.option('collectInfo') ? actInfo.endTime : actInfo.lotteryEndTime;;
+			actInfo.status = self.checkStatus(startTime, endTime);
 
 			switch(self.option('style')){
 				case 1:
@@ -164,8 +169,8 @@ define(function(require, exports, module) {
 				self.element.find('.many').text(Utils.formatSeconds(actInfo.status.timeLeft));
 
 				var timeInterval = setInterval(function(){
-					var timeLeft = self.checkStatus(actInfo.lotteryBeginTime, actInfo.lotteryEndTime).timeLeft;
-					
+					var timeLeft = self.checkStatus(startTime, endTime).timeLeft;
+					self.element.find('.many').text(Utils.formatSeconds(timeLeft));
 					if(timeLeft <= 0){
 						clearInterval(timeInterval);
 						switch(self.option('style')){
@@ -203,7 +208,7 @@ define(function(require, exports, module) {
 		 * @param  {object}   data 投票数据
 		 */
 		renderVote: function(){
-			var voteTemplate = require('./vote_m.handlebars');
+			var voteTemplate = require('./template/m/vote_m.handlebars');
 			$(voteTemplate(this.voteJSON)).appendTo(this.element);
 		},
 
@@ -260,7 +265,7 @@ define(function(require, exports, module) {
 		 */	
 		showCommentPop: function(){
 			var self = this,
-				template = require('./comment_m.handlebars'),
+				template = require('./template/m/comment_m.handlebars'),
 				data = {commentTip: self.option('commentTip')};
 			$('#comment_pop').length ? $('#comment_pop').show() : $(template(data)).appendTo(this.element);
 		},
@@ -271,7 +276,11 @@ define(function(require, exports, module) {
 		submitComment: function(){
 			var val = $.trim($('#comment_text').val()),
 				sid = $('#SOHUCS').attr('sid');
-			if(val === '' || !sid){
+			if(!sid){
+				return;
+			}
+			if(val === ''){
+				alert('请输入评论内容');
 				return;
 			}
 			$('#submit_comment').addClass('disabled').text('提交中...');
@@ -283,8 +292,11 @@ define(function(require, exports, module) {
 		 */	
 		commentSuccess: function(){
 			$('#comment_pop').remove();
-			this.needLoggedIn ? this.checkLogin() : this.checkValidate();
-			// this.checkLogin();
+			if(this.option('collectInfo')){
+				this.showInfoPop();
+			} else{
+				this.needLoggedIn ? this.checkLogin() : this.checkValidate();
+			}
 		},
 
 
@@ -311,7 +323,7 @@ define(function(require, exports, module) {
 		 * @method showSmsPop 显示短信验证码弹窗
 		 */
 		showSmsPop: function(){
-			var	template = require('./sms_m.handlebars');
+			var	template = require('./template/m/sms_m.handlebars');
 			$(template()).appendTo(this.element);
 		},
 
@@ -365,8 +377,9 @@ define(function(require, exports, module) {
 		 * @method showInfoPop 显示个人信息弹窗
 		 */		
 		showInfoPop: function(){
-			var template = require('./info_m.handlebars');
+			var template = require('./template/m/info_m.handlebars');
 			$(template(this.fieldSet)).appendTo(this.element);
+			this.element.find('[name=comment]').val(this.commentContent || '/');
 		},
 
 		/**
@@ -374,7 +387,12 @@ define(function(require, exports, module) {
 		 */			
 		submitInfoSuccess: function(){
 			$('#info_pop').remove();
-			this.doLottery();
+			if(this.option('collectInfo')){
+				alert('您的信息已经成功提交。' + this.option('collectInfoTip'));
+			} else{
+				
+			}
+			// this.doLottery();
 		},
 
 		/**
@@ -424,7 +442,7 @@ define(function(require, exports, module) {
 			var data = {
 					captcha: this.host + '/lottery/' + this.option('lotteryId') + '/captchaCode'
 				},
-				template = require('./imageCaptcha_m.handlebars');
+				template = require('./template/m/imageCaptcha_m.handlebars');
 			$(template(data)).appendTo(this.element);
 		},
 
@@ -460,7 +478,7 @@ define(function(require, exports, module) {
 				return;
 			}
 
-			var template = require('./result_m.handlebars');
+			var template = require('./template/m/result_m.handlebars');
 			$('.zq-actcompt-pop').remove();
 
 			if(this.option('style') === 3 && resultType === 1){

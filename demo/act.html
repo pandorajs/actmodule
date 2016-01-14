@@ -6,76 +6,46 @@
     <title>通用活动组件</title>
     <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no" />
     <script src="../vendor/seajs/sea.js"></script>
-    <script src="../vendor/seajs/seajs-text.js"></script>
-    <!--<script src="http://ue.17173cdn.com/a/www/index/2015/js/passport.js"></script>
-     <script src="http://ue.17173cdn.com/a/lib/pandora.js"></script>-->
+    <script src="../vendor/seajs/seajs-text.js"></script> 
+    <!-- <script src="http://ue.17173cdn.com/a/www/index/2015/js/passport.js"></script>-->
+    <script src="http://ue.17173cdn.com/a/lib/pandora.js"></script>
     <script type="text/javascript">
     seajs.config({
         'base': '../sea-modules/',
         'alias': {
-            '$': 'jquery/jquery/2.1.0/jquery',
+            '$': 'jquery/jquery/1.11.1/jquery',
             "handlebars": "gallery/handlebars/1.3.0/handlebars",
             'importstyle': 'pandora/importstyle/1.0.0/importstyle',
             'base': 'pandora/base/1.0.0/base',
-            'widget': 'pandora/widget/1.0.0/widget',
+            'widget': 'pandora/widget/1.0.0/widget'
         }
     });
     </script>
-
 </head>
 
-<body>
-<div id="act_module">
-    <div class="prize-text">
-        <p>1、登陆http://nsg.ooxx.com/，注册中青宝通行证</p>
-        <p>2、登陆游戏，到洛阳找到NPC“ 特权卡发放专员 ”</p>
-        <p>3、选择“激活码兑换”</p>
-        <p>4、输入激活码序列号，即可领取“17173称霸天下礼包”</p>
-        <p class="lottery-red">激活时间：9月15号</p>
-        <p>注：一个角色只能领取一次媒体礼包激活码，不能重复领取</p>
-    </div>
-</div>
+<body> 
+<div id="act_module"></div>
+
 <script type="text/javascript">
     seajs.use(['../src/actmodule'], function(ActModule) {
         new ActModule({
             element: '#act_module',
             actId: 4959, //活动ID
             lotteryId: 62, //抽奖ID
-            style: 3, //样式
-            // voteId: 10132, //投票ID
-            // needComment: true, //是否需要评论
-            // commentTip: '这里你要评论下', //评论导语
-            showImg: 1,
+            style: 1, //样式
+            // voteId: 10249, //投票ID
+            needComment: false, //是否需要评论
+            commentTip: '这里你要评论下', //评论导语
+            showImg: false,
             fieldSetId: 39, //收集信息的表单ID
             winnerUrl: 'http://www.163.com', //中奖名单链接
-            // needInfo: true //是否需要填写个人信息
+            needInfo: false, //是否需要填写个人信息
+            collectInfo: false, //是否人工抽奖
+            collectInfoTip: 'YOYOYOYO' //人工抽奖提交成功后的提示语
         });
     });
 </script>
 
 <div id="SOHUCS" sid="4065990_2_10345"></div>
-<script type="text/javascript">
-  //   var _config = {
-  //   categoryId :'10345'  //接入频道需要填写相应的categoryId
-  //   };
-  // (function(){
-  //   var appid = 'cyqvqDTV5',
-  //   conf = 'prod_303ed4c69846ab36c2904d3ba8573050';
-  //   var doc = document,
-  //   s = doc.createElement('script'),
-  //   h = doc.getElementsByTagName('head')[0] || doc.head || doc.documentElement;
-  //   s.type = 'text/javascript';
-  //   s.charset = 'utf-8';
-  //   s.src =  'http://assets.changyan.sohu.com/upload/changyan.js?conf='+ conf +'&appid=' + appid;
-  //   h.insertBefore(s,h.firstChild);
-  //   SCS_NO_IFRAME = true;
-  // })()
-</script>
-
-
-
-
-
 </body>
-
 </html>

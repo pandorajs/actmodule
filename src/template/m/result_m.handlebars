@@ -21,14 +21,18 @@
 			</div>
 			{{/if}}
 
+			{{#unless code}}
+			<div class="zq-actcompt-btn-box" style="display:none;"><button type="button" class="zq-actcompt-btn-submit" id="btn_fill_info">填写资料</button></div>
+			{{/unless}}
+
 			<div class="zq-actcompt-pop-line"></div>
-			<p class="zq-actcompt-pop-info"><span>说明：</span><br>
-				{{{prizeText}}}
-			</p>
+			<div class="zq-actcompt-pop-info"><span>说明：</span><br>
+				{{{prizeIntro}}}
+			</div>
 			{{/if}}
 
 			{{#if failed}}
-			<p class="zq-actcompt-pop-zjtit zq-actcompt-tx1">很抱歉，您未能中奖！<br></p>
+			<p class="zq-actcompt-pop-zjtit zq-actcompt-tx1">很抱歉，您未能中奖！<br>请继续关注17173，更多活动等着您。</p>
 			{{/if}}
 
 			{{#if showError}}

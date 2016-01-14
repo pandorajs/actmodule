@@ -5,7 +5,7 @@
 			<p class="zq-actcompt-pop-tiptxt">请填写真实信息，奖品将通过所填写的联系方式进行发放！</p>
 
 			{{#each this}}
-			<div class="zq-actcompt-form-item">
+			<div class="zq-actcompt-form-item"{{#if comment}} style="display:none"{{/if}}>
 				<label class="zq-actcompt-form-tit">{{name}}</label>
 				<input class="zq-actcompt-form-input" type="text" name="{{columnName}}" maxlength="{{length}}" value="" placeholder="">
 			</div>

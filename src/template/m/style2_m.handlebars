@@ -1,7 +1,7 @@
 <div class="zq-actcompt2 zq-actcompt">
 	<div class="zq-actcompt-txt">
 		<h4 class="zq-actcompt-tit">{{name}}</h4>
-		<p><span class="zq-actcompt-txt-name">活动时间：</span>{{lotteryBeginTimeFormatted}} - {{lotteryEndTimeFormatted}}</p>
+		<p><span class="zq-actcompt-txt-name">活动时间：</span>{{#if collectInfo}} {{beginTimeFormatted}} 至 {{endTimeFormatted}} {{else}} {{lotteryBeginTimeFormatted}} 至 {{lotteryEndTimeFormatted}}  {{/if}}</p>
 		<p><span class="zq-actcompt-txt-name">活动规则：</span>{{description}}</p>
 	</div>
 	{{#if status.inProgress}}

@@ -6,7 +6,7 @@
 	{{/if}}
 	<div class="zq-actcompt-text">
 		<h4 class="zq-actcompt-tit">{{name}}</h4>
-		<p class="zq-actcompt-p">活动时间：{{lotteryBeginTimeFormatted}} 至 {{lotteryEndTimeFormatted}}</p>
+		<p class="zq-actcompt-p">活动时间：{{#if collectInfo}} {{beginTimeFormatted}} 至 {{endTimeFormatted}} {{else}} {{lotteryBeginTimeFormatted}} 至 {{lotteryEndTimeFormatted}}  {{/if}}</p>
 		<p class="zq-actcompt-p">活动规则：{{description}}</p>
 		<div class="zq-actcompt2-state">
 			{{#if status.notYetStart}}

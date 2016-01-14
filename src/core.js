@@ -36,7 +36,8 @@ define(function(require, exports, module) {
 				saveInfo: host + '/form/' + this.option('fieldSetId') + '/saveData?callback=?',
 				checkLogin: host + '/lottery/' + lotteryId + '/chkLogin?callback=?',
 				cyanLoad: 'http://changyan.sohu.com/api/2/topic/load?callback=?',
-				commentSubmit: 'http://act.17173.com/comment/submit.php?callback=?'
+				commentSubmit: 'http://act.17173.com/comment/submit.php?callback=?',
+				join: host + '/join?callback=?'
 			};
 			this.getActInfo();
 			this.getTemplates();
@@ -99,6 +100,9 @@ define(function(require, exports, module) {
 				if(actInfo.result){
 					return;
 				}
+				actInfo.beginTimeFormatted = actInfo.beginTime.substring(0, 16);
+				actInfo.endTimeFormatted = actInfo.endTime.substring(0, 16);
+				actInfo.collectInfo = self.option('collectInfo');
 				self.getLotteryInfo(actInfo);
 			});
 		},
@@ -110,9 +114,6 @@ define(function(require, exports, module) {
 	     */
 		getLotteryInfo: function(actInfo){
 			var self = this;
-			function formatTime(){
-
-			}
 			$.getJSON(this.urls.lotteryInfo, function(lotteryData){
 				self.validateType = lotteryData.isVeriCode;
 				self.needLoggedIn = lotteryData.limitCond.indexOf('login') > -1;
@@ -136,7 +137,22 @@ define(function(require, exports, module) {
 		getInfoFields: function(){
 			var self = this;
 			$.getJSON(self.urls.fieldset, function(data){
-				self.fieldSet = data[0].formField;
+				for(var i = 0; i < data.length; i++){
+					if(data[i].id == self.option('fieldSetId')){
+						for(var j = 0; j < data[i].formField.length; j++){
+							if(data[i].formField[j].columnName == 'comment'){
+								data[i].formField[j].comment = true;
+								if(data[i].formField.length === 1){
+									self.notShowInfo = true;
+								}
+							}
+						}
+						self.fieldSet = data[i].formField;
+					}
+				}
+				if(!self.fieldSet){
+					alert('无法读取ID为' + self.option('fieldSetId') + '的表单，请检查后重新配置.')
+				}
 			})
 		},
 
@@ -151,7 +167,11 @@ define(function(require, exports, module) {
 			} else if(this.option('needComment')){
 				this.showCommentPop();
 			} else{
-				this.needLoggedIn ? this.checkLogin() : this.checkValidate();
+				if(this.option('collectInfo')){
+					this.showInfoPop();
+				} else{
+					this.needLoggedIn ? this.checkLogin() : this.checkInfo();
+				}
 			}
 		},
 
@@ -183,8 +203,8 @@ define(function(require, exports, module) {
 			if(this.option('voteId')){
 				this.getVoteInfo();
 			} 
-			//如果需要填写个人信息，取回个人信息表单项
-			if(this.option('needInfo')){
+			//只要配置了fieldSetId，就取回个人信息表单项
+			if(this.option('fieldSetId')){
 				this.getInfoFields();
 			}
 		},
@@ -197,7 +217,12 @@ define(function(require, exports, module) {
 		doVote: function(voteData){
 			var self = this;
 			$.getJSON(self.urls.voteProc, voteData, function(data){
-				self.voteSuccess();
+				if(self.option('collectInfo')){
+					self.showInfoPop();
+				} else{
+					self.voteSuccess();
+				}
+				
 			})
 		},
 
@@ -224,7 +249,7 @@ define(function(require, exports, module) {
 		},
 
 	    /**
-	     * @method doComment 执行评论
+	     * @method doComment 执行评论, 如果个人信息表单只有一个评论项时，需要同时提交评论到收集表单。并且不用显示个人信息表单。
 	     * @param  {String}   val 评论内容
 	     * @param  {String}   sid 畅言ID
 	     * @param  {String}   btn 提交按钮的选择器
@@ -245,6 +270,12 @@ define(function(require, exports, module) {
                     content: encodeURIComponent(val),
                     access_token: 'P9YIlfiDcC45SbJInp7DCfvA-Bhgu1ZG'//固定，不要更改
 				}, function(json){
+					if(!self.option('collectInfo')){ //如果是即时抽奖
+						self.commentContent = val; //把评论数据存起来
+						if(self.notShowInfo){ //且收集表单里只有一个评论字段，就在这里把评论提交到收集表单
+							self.submitInfo({comment: val});
+						}
+					}
 					self.commentSuccess();
 				})
 			})
@@ -262,10 +293,20 @@ define(function(require, exports, module) {
 				this.showSmsPop();
 			} else if(this.validateType === 'image'){
 				this.showImageCaptcha();
-			} else if(this.option('needInfo')){
-				this.showInfoPop();
 			} else{
 				this.doLottery();
+			}
+		},
+
+	    /**
+	     * @method checkInfo 判断是否需要显示个人信息弹窗
+	     * @private
+	     */	
+		checkInfo: function(){
+			if(this.option('needInfo') && !this.notShowInfo){
+				this.showInfoPop();
+			} else{
+				this.checkValidate();
 			}
 		},
 
@@ -289,10 +330,11 @@ define(function(require, exports, module) {
 	    /**
 	     * @method submitInfo 提交个人信息
 	     * @private
-	     */			
-		submitInfo: function(){
+	     */
+		submitInfo: function(commentData){
+
 			var self = this,
-				formData = this.validateInfoForm();
+				formData = commentData || this.validateInfoForm();
 			if(!!formData){
 				var info = {
 					lotteryId: self.lotteryId,
@@ -301,6 +343,13 @@ define(function(require, exports, module) {
 				$.getJSON(self.urls.saveInfo, info, function(data){
 					if(data.result === 'info.form.success'){
 						self.submitInfoSuccess();
+						if(self.option('collectInfo')){
+							alert('您的信息已经成功提交。' + self.option('collectInfoTip'));
+						} else if(self.option('needInfo')){
+							self.checkValidate();
+						} else{
+							alert('您的信息已经成功提交。');
+						}
 					} else{
 						alert(data.msg);
 					}
@@ -392,7 +441,6 @@ define(function(require, exports, module) {
 			$.getJSON(this.urls.lottery, data, function(resultData){
 				// resultData.code = '25235236236236';
 				// resultData.secretKey = 'secretKey';
-				resultData.prizeText = self.prizeText;
 				self.handleLotteryResult(resultData);
 			});
 		},
@@ -439,6 +487,7 @@ define(function(require, exports, module) {
 			}
 
 			this.done(data, resultType);
+			$.getJSON(this.urls.join); //发送参与标识
 		}
 	});
 

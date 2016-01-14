@@ -3,7 +3,7 @@
 		<a href="javascript:;" class="zq-actcompt-btn-get" id="zq_actcompt_in_progress"><span class="text">立即<br />领取</span><span class="many">已有{{joins}}人参与</span></a>
 	<div class="zq-actcompt-txt">
 		<h4 class="zq-actcompt-tit">{{name}}</h4>
-		<p><span class="zq-actcompt-txt-name">活动时间：</span>{{lotteryBeginTimeFormatted}} - {{lotteryEndTimeFormatted}}</p>
+		<p><span class="zq-actcompt-txt-name">活动时间：</span>{{#if collectInfo}} {{beginTimeFormatted}} 至 {{endTimeFormatted}} {{else}} {{lotteryBeginTimeFormatted}} 至 {{lotteryEndTimeFormatted}}  {{/if}}</p>
 		<p><span class="zq-actcompt-txt-name">活动规则：</span>{{description}}</p>
 	</div>
 </div>
