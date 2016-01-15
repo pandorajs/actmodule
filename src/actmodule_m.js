@@ -450,7 +450,7 @@ define(function(require, exports, module) {
 		 * @method imageCaptchaRefresh 刷新图片验证码
 		 */			
 		imageCaptchaRefresh: function(){
-			$('#za_actcompt_captcha').attr('src', '').attr('src', this.host + '/lottery/' + this.option('lotteryId') + '/captchaCode');
+			$('#za_actcompt_captcha').attr('src', '').attr('src', this.host + '/lottery/' + this.option('lotteryId') + '/captchaCode?' + new Date().getTime());
 		},
 
 		/**
