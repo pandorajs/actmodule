@@ -2,7 +2,7 @@
 	<div class="zq-actcompt-txt">
 		<h4 class="zq-actcompt-tit">{{name}}</h4>
 		<p><span class="zq-actcompt-txt-name">活动时间：</span>{{#if collectInfo}} {{beginTimeFormatted}} 至 {{endTimeFormatted}} {{else}} {{lotteryBeginTimeFormatted}} 至 {{lotteryEndTimeFormatted}}  {{/if}}</p>
-		<p><span class="zq-actcompt-txt-name">活动规则：</span>{{description}}</p>
+		<p><span class="zq-actcompt-txt-name">活动规则：</span>{{{description}}}</p>
 	</div>
 	{{#if status.inProgress}}
 	<a href="javascript:;" class="zq-actcompt-btn" id="zq_actcompt_in_progress">

@@ -1,6 +1,6 @@
 define(function(require, exports, module) {
 	/**
-	* 通用活动组件PC端  TODO:合并PC和移动端
+	* 通用活动组件 
 	* @module ActModule
 	*/
 
@@ -76,11 +76,17 @@ define(function(require, exports, module) {
 					}
 					this.validateMobile();
 				},
+				'click .zq-actcompt-pop-btn-send': function(e){
+					if($(e.currentTarget).parent().hasClass('sms-send-success')){
+						return;
+					}
+					this.validateMobile();
+				},
 				'click #submit_sms': function(e){
 					this.submitSms();
 				},
 				'keyup .zq-actcompt-form-input input': function(e){
-					$(e.currentTarget).parents('.zq-actcompt-form-item').next('.zq-actcompt-form-error').hide().text('');
+					this.inputKeyupHandler(e);
 				},
 				'click #cancel_submit_info': function(e){
 					$(e.currentTarget).parents('.zq-actcompt-pop').find('.zq-actcompt-pop-close').trigger('click');
@@ -91,44 +97,73 @@ define(function(require, exports, module) {
 				'click #btn_fill_info': function(){
 					this.element.find('#result_pop, .zq-actcompt-pop-mask').remove();
 					this.showInfoPop();
+				},
+				'submit #image_captcha_form': function(e){
+					e.preventDefault();
 				}
 			}
 		},
 		setup: function(){
 			ActModule.superclass.setup.apply(this);
-			typeof Passport === 'undefined' && $.getScript('http://ue.17173cdn.com/a/www/index/2015/js/passport.js');
-			$('<link rel="stylesheet" href="http://ue.17173cdn.com/a/module/zq/2015/act-lottery/css/layout.css">').appendTo("head");
+
+			if(this.mobile){
+				$('<link rel="stylesheet" href="http://ue.17173cdn.com/a/module/zq/2015/act-lottery/m/css/style.css">').appendTo("head");
+				$.getScript('http://passport.17173.com/themes/default/static/js/topbar/topbar.js', function(){
+					window.wap.init();
+				});
+			} else{
+				typeof Passport === 'undefined' && $.getScript('http://ue.17173cdn.com/a/www/index/2015/js/passport.js');
+				$('<link rel="stylesheet" href="http://ue.17173cdn.com/a/module/zq/2015/act-lottery/css/layout.css">').appendTo("head");
+			}
 			$(this.element).html('');
 		},
 
 
 	    /**
-	     * @method getTemplates 引入样式表及获取4个样式的模板
+	     * @method getTemplates 引入模板
 	     *
 	     */
 		getTemplates: function(){
-			this.template1 = require('./template/pc/style1.handlebars');
-			this.template2 = require('./template/pc/style2.handlebars');
-			this.template3 = require('./template/pc/style3.handlebars');
-			this.template4 = require('./template/pc/style4.handlebars');
+			this.templates = {
+				pc: {
+					template1: require('./template/pc/style1.handlebars'),
+					template2: require('./template/pc/style2.handlebars'),
+					template3: require('./template/pc/style3.handlebars'),
+					template4: require('./template/pc/style4.handlebars'),
+					comment: require('./template/pc/comment.handlebars'),
+					imageCaptcha: require('./template/pc/imageCaptcha.handlebars'),
+					info: require('./template/pc/info.handlebars'),
+					result: require('./template/pc/result.handlebars'),
+					SMS: require('./template/pc/sms.handlebars'),
+					vote: require('./template/pc/vote.handlebars')
+				},
+				mobile: {
+					template1: require('./template/m/style1.handlebars'),
+					template2: require('./template/m/style2.handlebars'),
+					template3: require('./template/m/style3.handlebars'),
+					comment: require('./template/m/comment.handlebars'),
+					imageCaptcha: require('./template/m/imageCaptcha.handlebars'),
+					info: require('./template/m/info.handlebars'),
+					result: require('./template/m/result.handlebars'),
+					SMS: require('./template/m/sms.handlebars'),
+					vote: require('./template/m/vote.handlebars')
+				}
+			}
 		},
 
 		/**
 		 * @method closePopup 关闭弹出框
 		 * @param  {object}   e 事件对象
-		 */	
+		 */
 		closePopup: function(e){
-			var $popup = $(e.currentTarget).parent(),
-				$mask = $popup.next('.zq-actcompt-pop-mask');
-			$popup.remove();
-			$mask.remove();
-
-			// if($popup.attr('id') === 'result_pop'){
-			// 	$popup.remove();
-			// 	$('.zq-actcompt-pop-mask').remove();
-			// } else{
-			// 	$(e.currentTarget).parent().hide().next('.zq-actcompt-pop-mask').hide();
-			// }
+			if(this.mobile){
+				$(e.currentTarget).parents('.zq-actcompt-pop').remove();
+			} else{
+				var $popup = $(e.currentTarget).parent(),
+					$mask = $popup.next('.zq-actcompt-pop-mask');
+				$popup.remove();
+				$mask.remove();				
+			}
 		},
 
 		/**
@@ -170,54 +205,80 @@ define(function(require, exports, module) {
 				startTime = this.option('collectInfo') ? actInfo.beginTime : actInfo.lotteryBeginTime,
 				endTime = this.option('collectInfo') ? actInfo.endTime : actInfo.lotteryEndTime;
 
+			this.endTime = Utils.datetimeToUnix(endTime);
 			actInfo.status = self.checkStatus(startTime, endTime);
 
-			switch(self.option('style')){
+			if(this.option('style') == 4 && this.mobile){
+				console.error('样式4不支持移动端。');
+				return;
+			}
+
+			switch(+self.option('style')){
 				case 1:
-					$(self.template1(actInfo)).appendTo(self.element);
+					$(self.templates[self.platform].template1(actInfo)).appendTo(self.element);
 					break;
 				case 2:
-					$(self.template2(actInfo)).appendTo(self.element);
+					$(self.templates[self.platform].template2(actInfo)).appendTo(self.element);
 					break;
 				case 3:
-					$(self.template3(actInfo)).appendTo(self.element);
+					$(self.templates[self.platform].template3(actInfo)).appendTo(self.element);
 					break;
 				case 4:
-					$(self.template4(actInfo)).appendTo(self.element);
+					$(self.templates[self.platform].template4(actInfo)).appendTo(self.element);
 					break;
 			}
 
-			//活动进行中 
-			if(actInfo.status.inProgress){
+			if(!actInfo.status.ended){
 				self.initAct();
 			}
+
 			//活动未开始
-			else if(actInfo.status.notYetStart){
-				self.element.find('.zq-actcompt-or').text(Utils.formatSeconds(actInfo.status.timeLeft));
+			if(actInfo.status.notYetStart){
+
+				var timeElement = this.mobile ? '.many' : '.zq-actcompt-or';
+				self.element.find(timeElement).text(Utils.formatSeconds(actInfo.status.timeLeft));
+
 				var timeInterval = setInterval(function(){
 					var timeLeft = self.checkStatus(startTime, endTime).timeLeft;
-					self.element.find('.zq-actcompt-or').text(Utils.formatSeconds(timeLeft));
+					self.element.find(timeElement).text(Utils.formatSeconds(timeLeft));
 
 					if(timeLeft <= 0){
 						clearInterval(timeInterval);
-						switch(self.option('style')){
-							case 1:
-								$('.zq-actcompt-state-tt').html('已有<span class="zq-actcompt-or zq-actcompt-fb">0</span>人参与');
-								self.element.find('#zq_actcompt_not_yet_start').attr('id', 'zq_actcompt_in_progress').text('立即领取');
-								break;
-							case 2:
-								$('.zq-actcompt-state-tt').html('已有<span class="zq-actcompt-or zq-actcompt-fb">0</span>人参与');
-								self.element.find('#zq_actcompt_not_yet_start').attr('id', 'zq_actcompt_in_progress').text('立即领取');
-								break;
-							case 3:
-								var winnerHtml = self.option('winnerUrl') ? '<a href="' + self.option('winnerUrl') + '" target="_blank" title="查看中奖名单" class="zq-actcompt-fr zq-actcompt-btn-winners ">查看中奖名单&gt;&gt;</a>' : '';
-								$('.zq-actcompt-or').replaceWith('<div class="zq-actcompt-oz"><span class="zq-actcompt-fl">已有<span class="zq-actcompt-or zq-actcompt-fb">0</span>人参与</span>' + winnerHtml + '</div>');
-								self.element.find('#zq_actcompt_not_yet_start').replaceWith('<a href="#lottery" title="我要抽奖" class="zq-actcompt-btn-cj" id="zq_actcompt_in_progress">我要抽奖<i class="zq-actcompt-ico zq-actcompt-ico-play"></i></a>');
-								break;
-							case 4:
-								$('.zq-actcompt-p').html('已有<span class="zq-actcompt-or zq-actcompt-fb">0</span>人参与');
-								self.element.find('#zq_actcompt_not_yet_start').attr('id', 'zq_actcompt_in_progress').text('立即领取');
-								break;
+						if(self.mobile){
+							switch(+self.option('style')){
+								case 1:
+									self.element.find('#zq_actcompt_not_yet_start').replaceWith('<a href="javascript:;" class="zq-actcompt-btn-get" id="zq_actcompt_in_progress"><span class="text">立即<br />领取</span><span class="many">已有' + self.actInfo.joins + '人参与</span></a>');
+									self.element.find('.zq-actcompt1-begin').attr('class', 'zq-actcompt1 zq-actcompt');
+									break;
+								case 2:
+									self.element.find('#zq_actcompt_not_yet_start').replaceWith('<a href="javascript:;" class="zq-actcompt-btn" id="zq_actcompt_in_progress"><span class="many"><i class="zq-actcompt-ico-per1"></i>已有' + self.actInfo.joins + '人参与</span><span class="sep"></span>立即领取</a>');
+									break;
+								case 3:
+									var winnerHtml = self.option('winnerUrl') ? '<a href="' + self.option('winnerUrl') + '"  title="查看中奖名单" class="zq-actcompt-btn-winners">查看中奖名单&gt;&gt;</a>' : '';
+									$('#zq_actcompt_not_yet_start').replaceWith('<a href="javascript:;"  title="" class="zq-actcompt-btn-cj" id="zq_actcompt_in_progress">我要抽奖<i class="zq-actcompt-ico-play"></i></a>');
+									$('.zq-actcompt-num').html('<i class="zq-actcompt-ico-per2"></i>已有 <span class="zq-actcompt-or">' + self.actInfo.joins + '</span>人参与' + winnerHtml);
+									break;
+							}
+						} else{
+							switch(+self.option('style')){
+								case 1:
+									$('.zq-actcompt-state-tt').html('已有<span class="zq-actcompt-or zq-actcompt-fb">' + self.actInfo.joins + '</span>人参与');
+									self.element.find('#zq_actcompt_not_yet_start').attr('id', 'zq_actcompt_in_progress').text('立即领取').removeClass('zq-actcompt-btn-begin').addClass('zq-actcompt-btn-in');
+									break;
+								case 2:
+									$('.zq-actcompt-state-tt').html('已有<span class="zq-actcompt-or zq-actcompt-fb">' + self.actInfo.joins + '</span>人参与');
+									self.element.find('#zq_actcompt_not_yet_start').attr('id', 'zq_actcompt_in_progress').text('立即领取').removeClass('zq-actcompt-btn-begin').addClass('zq-actcompt-btn-in');
+									break;
+								case 3:
+									var winnerHtml = self.option('winnerUrl') ? '<a href="' + self.option('winnerUrl') + '" target="_blank" title="查看中奖名单" class="zq-actcompt-fr zq-actcompt-btn-winners ">查看中奖名单&gt;&gt;</a>' : '';
+									$('.zq-actcompt-or').replaceWith('<div class="zq-actcompt-oz"><span class="zq-actcompt-fl">已有<span class="zq-actcompt-or zq-actcompt-fb">' + self.actInfo.joins + '</span>人参与</span>' + winnerHtml + '</div>');
+									self.element.find('#zq_actcompt_not_yet_start').replaceWith('<a href="#lottery" title="我要抽奖" class="zq-actcompt-btn-cj" id="zq_actcompt_in_progress">我要抽奖<i class="zq-actcompt-ico zq-actcompt-ico-play"></i></a>');
+									break;
+								case 4:
+									$('.zq-actcompt-p').html('已有<span class="zq-actcompt-or zq-actcompt-fb">' + self.actInfo.joins + '</span>人参与');
+									self.element.find('#zq_actcompt_not_yet_start').attr('id', 'zq_actcompt_in_progress').text('立即领取');
+									break;
+							}
 						}
 					}
 				}, 1000);
@@ -239,8 +300,7 @@ define(function(require, exports, module) {
 		 * @param  {object}   data 投票数据
 		 */			
 		renderVote: function(){
-			var voteTemplate = require('./template/pc/vote.handlebars');
-			$(voteTemplate(this.voteJSON)).appendTo(this.element);
+			$(this.templates[this.platform].vote(this.voteJSON)).appendTo(this.element);
 		},
 
 		/**
@@ -249,7 +309,7 @@ define(function(require, exports, module) {
 		 */				
 		handleVoteOptions: function(option){
 			//如果是单选
-			if($(option).parents('[data-voteid]').data('votetype') == 0){
+			if($(option).parents('[data-voteid]').data('votetype') == 0){ 
 				if(!$(option).hasClass('on')){
 					$(option).addClass('on').siblings().removeClass('on');
 				}
@@ -266,7 +326,7 @@ define(function(require, exports, module) {
 		 */			
 		submitVote: function(submit){
 			var self = this;
-			var $vote = $(submit).parents('[data-voteid]');
+			var $vote = $(submit).parents('[data-voteid]'); 
 			if($vote.find('.on').length < 1){
 				alert('请选择一个选项');
 				return;
@@ -286,10 +346,14 @@ define(function(require, exports, module) {
 
 		/**
 		 * @method voteSuccess 投票成功的回调函数，提交后隐藏投票弹窗，然后检查是否登录
-		 */				
+		 */
 		voteSuccess: function(){
 			$('#vote_pop, .zq-actcompt-pop-mask').remove();
-			this.needLoggedIn ? this.checkLogin() : this.checkInfo();
+			if(this.option('collectInfo')){
+				this.showInfoPop();
+			} else{
+				this.needLoggedIn ? this.checkLogin() : this.checkInfo();
+			}
 		},
 
 		/**
@@ -297,9 +361,8 @@ define(function(require, exports, module) {
 		 */	
 		showCommentPop: function(){
 			var self = this,
-				template = require('./template/pc/comment.handlebars'),
 				data = {commentTip: self.option('commentTip')};
-			$('#comment_pop').length ? $('#comment_pop, .zq-actcompt-pop-mask').show() : $(template(data)).appendTo(this.element);
+			$('#comment_pop').length ? $('#comment_pop, .zq-actcompt-pop-mask').show() : $(self.templates[self.platform].comment(data)).appendTo(this.element);
 		},
 
 		/**
@@ -330,7 +393,6 @@ define(function(require, exports, module) {
 			} else{
 				this.needLoggedIn ? this.checkLogin() : this.checkInfo();
 			}
-			
 		},
 
 		/**
@@ -338,15 +400,29 @@ define(function(require, exports, module) {
 		 */	
 		checkLogin: function(){
 			var self = this;
-			if(this.isLoggedIn()){
-				this.checkInfo();
-			} else{
-				var loginSuccessHandler = function(){
-					self.checkInfo();
+			if(this.mobile){
+				if(!wap){
+					return;
 				}
-				Passport.on('loginSuccess', loginSuccessHandler);
-				Passport.off(loginSuccessHandler);
-				Passport.Dialog.show();
+				if(wap.isLogin()){
+					this.checkInfo();
+				} else{
+					wap.on('loginSuccess', function(){
+						self.checkInfo();
+					});
+					wap.show();
+				}
+			} else{
+				if(this.isLoggedIn()){
+					this.checkInfo();
+				} else{
+					var loginSuccessHandler = function(){
+						self.checkInfo();
+					}
+					Passport.on('loginSuccess', loginSuccessHandler);
+					Passport.off(loginSuccessHandler);
+					Passport.Dialog.show();
+				}
 			}
 		},
 
@@ -354,8 +430,7 @@ define(function(require, exports, module) {
 		 * @method showSmsPop 显示短信验证码弹窗
 		 */
 		showSmsPop: function(){
-			var	template = require('./template/pc/sms.handlebars');
-			$(template()).appendTo(this.element);
+			$(this.templates[this.platform].SMS()).appendTo(this.element);
 		},
 
 		/**
@@ -375,16 +450,21 @@ define(function(require, exports, module) {
 		 * @method smsSendSuccess 短信下发成功的回调函数
 		 */		
 		smsSendSuccess: function(){
-			$('#send_sms').addClass('lottery-btn-sendcode-disabled');
-			var timeleft = +$('#sms_time_left').text();
+			var el = this.mobile ? '#sms_pop .zq-actcompt-form-item-ex1' : '#send_sms';
+			this.mobile ? $(el).addClass('sms-send-success') : $(el).addClass('lottery-btn-sendcode-disabled')
+
+			var timeleft = 120;
 			var resendInterval = setInterval(function(){
 				$('#sms_time_left').text(--timeleft);
 				if(timeleft <= 0){
 					clearInterval(resendInterval);
-					$('#send_sms').removeClass('lottery-btn-sendcode-disabled');
+					$(el).removeClass('lottery-btn-sendcode-disabled sms-send-success');
 					$('#sms_time_left').text('120');
 				}
 			}, 1000);
+			$('#sms_pop .zq-actcompt-pop-close').click(function(){
+				clearInterval(resendInterval);
+			})
 		},
 
 		/**
@@ -407,17 +487,22 @@ define(function(require, exports, module) {
 		 * @method showInfoPop 显示个人信息弹窗
 		 */		
 		showInfoPop: function(){
-			var template = require('./template/pc/info.handlebars');
-			$(template(this.fieldSet)).appendTo(this.element);
+			$(this.templates[this.platform].info(this.fieldSet)).appendTo(this.element);
 			this.element.find('[name=comment]').val(this.commentContent || '/');
 		},
 
 		/**
 		 * @method submitInfoSuccess 个人信息提交成功的回调. 有三种情况：1 人工抽奖 2 在抽奖流程里，提交后进入填验证码步骤 3 配置了不需要收集信息，但是抽奖结果为实物时
-		 */			
-		submitInfoSuccess: function(){
+		 */
+		submitInfoSuccess: function(){ 
 			$('#info_pop, .zq-actcompt-pop-mask').remove();
-			// this.doLottery();
+			if(this.option('collectInfo')){
+				alert('您的信息已经成功提交。' + this.option('collectInfoTip'));
+			} else if(this.option('needInfo')){
+				this.checkValidate();
+			} else{
+				alert('您的信息已经成功提交。');
+			}
 		},
 
 		/**
@@ -429,26 +514,35 @@ define(function(require, exports, module) {
 				formData = {},
 				reMail = /^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$/,
 				reMobile = /^1\d{10}$/,
-				reQQ = /^[1-9]\d{4,11}$/;
-			$('.zq-actcompt-form-input').each(function(){
-				var val = $.trim($(this).find('input').val()),
-					name = $(this).find('input').attr('name'),
-					cName = $(this).prev('.zq-actcompt-form-tit').text(),
-					$error = $(this).parent().next('.zq-actcompt-form-error');
+				reQQ = /^[1-9]\d{4,11}$/,
+				$input = this.mobile ? $('.zq-actcompt-form-input') : $('.zq-actcompt-form-input input');
+				
+
+			$input.each(function(){
+				var val = $.trim($(this).val()),
+					name = $(this).attr('name'),
+					cName = $(this).parents('.zq-actcompt-form-item').find('[data-name]').text(),
+					$error = this.mobile ? $(this).parent().next('.zq-actcompt-form-error') : $(this).parents('.zq-actcompt-form-item').next('.zq-actcompt-form-error'),
+					$errorText = this.mobile ? $error : $error.find('span');
 				if(val === ''){
-					$error.show().text('请填写您的' + cName);
+					$error.show();
+					$errorText.text('请填写您的' + cName);
 					pass = false;
 				} else if(name === 'email' && !reMail.test(val)){
-					$error.show().text('请输入正确的' + cName);
+					$error.show();
+					$errorText.text('请输入正确的' + cName);
 					pass = false;				
 				} else if(name === 'phone' && !reMobile.test(val)){
-					$error.show().text('请输入正确的' + cName);
+					$error.show();
+					$errorText.text('请输入正确的' + cName);
 					pass = false;
 				} else if(name === 'qq' && !reQQ.test(val)){
-					$error.show().text('请输入正确的' + cName);
+					$error.show();
+					$errorText.text('请输入正确的' + cName)
 					pass = false;
 				} else{
-					$error.hide().text('');
+					$error.hide();
+					$errorText.text('');
 					formData[name] = val;
 				}
 			});
@@ -459,19 +553,26 @@ define(function(require, exports, module) {
 			}
 		},
 
+		inputKeyupHandler: function(e){
+			if(this.mobile){
+				$(e.currentTarget).parent().next('.zq-actcompt-form-error').hide().find('span').text('');
+			} else{
+				$(e.currentTarget).parents('.zq-actcompt-form-item').next('.zq-actcompt-form-error').hide().text('');
+			}
+		},
+
 		/**
 		 * @method showImageCaptcha 显示图片验证码弹窗
 		 */		
 		showImageCaptcha: function(){
 			var data = {
-					captcha: this.host + '/lottery/' + this.option('lotteryId') + '/captchaCode'
-				},
-				template = require('./template/pc/imageCaptcha.handlebars');
+					captcha: this.host + '/lottery/' + this.option('lotteryId') + '/captchaCode?' + new Date().getTime()
+				};
 			if($('#captcha_pop').length){
 				this.imageCaptchaRefresh();
 				$('#captcha_pop, .zq-actcompt-pop-mask').show();
 			} else{
-				$(template(data)).appendTo(this.element);
+				$(this.templates[this.platform].imageCaptcha(data)).appendTo(this.element);
 			}
 		},
 
@@ -510,26 +611,25 @@ define(function(require, exports, module) {
 			var joins = +this.element.find('.zq-actcompt-or').text();
 			this.element.find('.zq-actcompt-or').text(joins+1);
 
-			var template = require('./template/pc/result.handlebars');
 			$('.zq-actcompt-pop, .zq-actcompt-pop-mask').remove();
 
 			if(this.option('style') === 3 && resultType === 1){
 				$('#zq_actcompt_in_progress').addClass('disabled');
-				this.animateIt(data.prizeId, data, template, '.zq-actcompt-item');
+				this.animateIt(data.prizeId, data, '.zq-actcompt-item');
 			} else{
-				this.animateEnd(data, template);
+				this.animateEnd(data);
 
 	        	// $(template(data)).appendTo(this.element);
 	        	// this.copy();
 			}
 		},
 
-		animateEnd: function(data, template){
-        	$(template(data)).appendTo(this.element);
+		animateEnd: function(data){
+        	$(this.templates[this.platform].result(data)).appendTo(this.element);
         	if(!this.option('needInfo') && !data.code){//实物
         		this.element.find('.zq-actcompt-pop .zq-actcompt-btn-box').show();
         	}
-        	this.copy();
+        	!this.mobile && this.copy();
         	$('#zq_actcompt_in_progress').removeClass('disabled');
 		},
 

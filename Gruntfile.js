@@ -119,8 +119,8 @@ module.exports = function(grunt) {
       src: {
         files: [{
           expand: true,
-          cwd: 'src/',
-          src: ['*.js', '*.handlebars', '*.css'],
+          cwd: 'src',
+          src: ['*.*', 'template/pc/*.handlebars', 'template/m/*.handlebars'],
           dest: '.build/'
         }]
       }
@@ -135,7 +135,7 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: '.build/',
-          src: ['actmodule.js', 'actmodule_m.js'],
+          src: ['actmodule.js'],
           dest: 'dist/'
         }]
       }
@@ -167,7 +167,7 @@ module.exports = function(grunt) {
 
   });
 
-  grunt.registerTask('build', ['clean:dist', 'transport', 'concat', 'clean:build', 'uglify']);
+  grunt.registerTask('build', ['clean:dist', 'transport', 'concat', /*'clean:build',*/ 'uglify']);
 
   grunt.registerTask('demo', ['clean:sea', 'copy:sea']);
 

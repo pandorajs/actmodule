@@ -34,8 +34,8 @@
   "dependencies": {},
   "devDependencies": {
     "grunt": "*",
-    "grunt-cmd-transport": "crossjs/grunt-cmd-transport",
     "grunt-cmd-concat": "*",
+    "grunt-cmd-transport": "crossjs/grunt-cmd-transport",
     "grunt-contrib-clean": "*",
     "grunt-contrib-copy": "*",
     "grunt-contrib-jshint": "*",
@@ -48,8 +48,7 @@
   "family": "pandora",
   "spm": {
     "output": [
-      "actmodule.js",
-      "actmodule_m.js"
+      "actmodule.js"
     ],
     "alias": {
       "$": "$",

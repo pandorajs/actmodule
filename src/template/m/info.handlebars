@@ -6,7 +6,7 @@
 
 			{{#each this}}
 			<div class="zq-actcompt-form-item"{{#if comment}} style="display:none"{{/if}}>
-				<label class="zq-actcompt-form-tit">{{name}}</label>
+				<label class="zq-actcompt-form-tit" data-name>{{name}}</label>
 				<input class="zq-actcompt-form-input" type="text" name="{{columnName}}" maxlength="{{length}}" value="" placeholder="">
 			</div>
 			<div class="zq-actcompt-form-error"><i class="zq-actcompt-ico-error"></i><span></span></div>

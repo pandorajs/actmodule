@@ -5,6 +5,8 @@ define(function(require, exports, module) {
 		Utils = require('./utils');
 
 
+
+
 	/**
 	* 数据及基础类
 	*
@@ -20,16 +22,18 @@ define(function(require, exports, module) {
 		 */
 		defaults: {
 			actId: 0,
-			style: 1
+			style: 1,
+			fieldset: ''
 		},
 		setup: function(){
 			var host = this.host = 'http://p.act.dev.17173.com/api/v1/activity/' + this.option('actId'),
-				lotteryId = this.option('lotteryId');
+				lotteryId = this.option('lotteryId'),
+				fieldSetId = this.option('fieldSetId');
 			this.urls = {
 				voteInfo: 'http://vote.17173.com/port/getvote_interface.php?callback=?',
 				voteProc: 'http://vote.17173.com/action/vote_process_interface.php?callback=?',
 				lottery: host + '/lottery/' + lotteryId + '?callback=?',
-				fieldset: host + '/form?callback=?',
+				fieldset: host + '/form?formId=' + fieldSetId + '&callback=?',
 				actInfo: host + '/info?callback=?',
 				lotteryInfo: host + '/lotteryInfo?lotteryId=' + lotteryId + '&callback=?',
 				sms: host + '/lottery/' + lotteryId + '/smsCaptchaCode?callback=?',
@@ -39,9 +43,11 @@ define(function(require, exports, module) {
 				commentSubmit: 'http://act.17173.com/comment/submit.php?callback=?',
 				join: host + '/join?callback=?'
 			};
+			this.mobile = this.isMobile();
 			this.getActInfo();
-			this.getTemplates();
 			this.ajaxPrefilter();
+			this.getTemplates();
+			this.platform = this.mobile ? 'mobile' : 'pc';
 		},
 
 		/**
@@ -90,6 +96,23 @@ define(function(require, exports, module) {
 		},
 
 		/**
+		 * @method isMobile 检测是否移动端
+		 * @private
+		 */
+		isMobile: function(){
+			var ua = navigator.userAgent,
+	            os = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPod", "BlackBerry"],
+	            mobile = false;
+	        for (var i = 0; i < os.length; i++) {
+	            if (ua.indexOf(os[i]) > -1) {
+	                mobile = true;
+	                break;
+	            }
+	        }
+	        return mobile;
+		},
+
+		/**
 		 * @method getActInfo 获取活动数据
 		 * @private
 		 */
@@ -104,6 +127,7 @@ define(function(require, exports, module) {
 				actInfo.endTimeFormatted = actInfo.endTime.substring(0, 16);
 				actInfo.collectInfo = self.option('collectInfo');
 				self.getLotteryInfo(actInfo);
+				self.actInfo = actInfo;
 			});
 		},
 
@@ -114,20 +138,25 @@ define(function(require, exports, module) {
 	     */
 		getLotteryInfo: function(actInfo){
 			var self = this;
-			$.getJSON(this.urls.lotteryInfo, function(lotteryData){
-				self.validateType = lotteryData.isVeriCode;
-				self.needLoggedIn = lotteryData.limitCond.indexOf('login') > -1;
-				var info = {
-					prizeList: lotteryData.prizeList,
-					showImg: self.option('showImg'),
-					lotteryBeginTime: lotteryData.startTime,
-					lotteryEndTime: lotteryData.endTime,
-					lotteryBeginTimeFormatted: lotteryData.startTime.substring(0, 16),
-					lotteryEndTimeFormatted: lotteryData.endTime.substring(0, 16)
-				}
-				actInfo = $.extend({}, actInfo, info);
+			if(self.option('collectInfo')){
+				actInfo.showImg = self.option('showImg');
 				self.render(actInfo);
-			});
+			} else{
+				$.getJSON(this.urls.lotteryInfo, function(lotteryData){
+					self.validateType = lotteryData.isVeriCode;
+					self.needLoggedIn = lotteryData.limitCond.indexOf('login') > -1;
+					var info = {
+						prizeList: lotteryData.prizeList,
+						showImg: self.option('showImg'),
+						lotteryBeginTime: lotteryData.startTime,
+						lotteryEndTime: lotteryData.endTime,
+						lotteryBeginTimeFormatted: lotteryData.startTime.substring(0, 16),
+						lotteryEndTimeFormatted: lotteryData.endTime.substring(0, 16)
+					}
+					actInfo = $.extend({}, actInfo, info);
+					self.render(actInfo);
+				});			
+			}
 		},
 
 	    /**
@@ -136,19 +165,18 @@ define(function(require, exports, module) {
 	     */
 		getInfoFields: function(){
 			var self = this;
-			$.getJSON(self.urls.fieldset, function(data){
-				for(var i = 0; i < data.length; i++){
-					if(data[i].id == self.option('fieldSetId')){
-						for(var j = 0; j < data[i].formField.length; j++){
-							if(data[i].formField[j].columnName == 'comment'){
-								data[i].formField[j].comment = true;
-								if(data[i].formField.length === 1){
-									self.notShowInfo = true;
-								}
-							}
+			if(!this.option('fieldSetId')){
+				return;
+			}
+			$.getJSON(self.urls.fieldset, {formId: this.option('fieldSetId')}, function(data){
+				for(var i = 0; i < data.formField.length; i++){
+					if(data.formField[i].columnName == 'comment'){
+						data.formField[i].comment = true;
+						if(data.formField.length === 1){
+							self.notShowInfo = true;
 						}
-						self.fieldSet = data[i].formField;
 					}
+					self.fieldSet = data.formField;
 				}
 				if(!self.fieldSet){
 					alert('无法读取ID为' + self.option('fieldSetId') + '的表单，请检查后重新配置.')
@@ -217,12 +245,7 @@ define(function(require, exports, module) {
 		doVote: function(voteData){
 			var self = this;
 			$.getJSON(self.urls.voteProc, voteData, function(data){
-				if(self.option('collectInfo')){
-					self.showInfoPop();
-				} else{
-					self.voteSuccess();
-				}
-				
+				self.voteSuccess();
 			})
 		},
 
@@ -332,7 +355,10 @@ define(function(require, exports, module) {
 	     * @private
 	     */
 		submitInfo: function(commentData){
-
+			if(Math.floor(new Date().getTime()/1000) > this.endTime){
+				alert('活动已结束.');
+				return;
+			}
 			var self = this,
 				formData = commentData || this.validateInfoForm();
 			if(!!formData){
@@ -343,13 +369,6 @@ define(function(require, exports, module) {
 				$.getJSON(self.urls.saveInfo, info, function(data){
 					if(data.result === 'info.form.success'){
 						self.submitInfoSuccess();
-						if(self.option('collectInfo')){
-							alert('您的信息已经成功提交。' + self.option('collectInfoTip'));
-						} else if(self.option('needInfo')){
-							self.checkValidate();
-						} else{
-							alert('您的信息已经成功提交。');
-						}
 					} else{
 						alert(data.msg);
 					}
@@ -362,10 +381,10 @@ define(function(require, exports, module) {
 	     * @method animateIt 样式三的抽奖动画
 	     * @param  {String}   prizeId 奖品ID，未中奖为0
 	     * @param  {object}   data 抽奖接口返回的数据
-	     * @param  {object}   template 中奖结果弹窗的模板
+	     * @param  {String}   el 奖品的类名
 	     * @private
 	     */	
-		animateIt: function(prizeId, data, template, el){
+		animateIt: function(prizeId, data, el){
 			var self = this;
 			var moving = false;
 		    var timer = null;
@@ -410,7 +429,7 @@ define(function(require, exports, module) {
 		            moving = false;
 		            clearInterval(timer);
 		            setTimeout(function() {
-		            	self.animateEnd(data, template);
+		            	self.animateEnd(data);
 		            }, 500);
 		        }
 		    }
@@ -487,7 +506,10 @@ define(function(require, exports, module) {
 			}
 
 			this.done(data, resultType);
-			$.getJSON(this.urls.join); //发送参与标识
+			if(resultType == 1){
+				$.getJSON(this.urls.join); //发送参与标识
+			}
+			
 		}
 	});
 

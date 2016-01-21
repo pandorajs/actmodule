@@ -5,7 +5,7 @@
 
 			{{#if success}}
 			<p class="zq-actcompt-pop-zjtit">恭喜您！获得了：<br> 
-			<span class="zq-actcompt-tx1">{{prizeName}}</span></p>
+			<span class="zq-actcompt-tx1 zq-actcompt-pop-tiptxt">{{prizeName}}</span></p>
 
 			{{#if code}}
 			<div class="zq-actcompt-form-item">
@@ -22,7 +22,7 @@
 			{{/if}}
 
 			{{#unless code}}
-			<div class="zq-actcompt-btn-box" style="display:none;"><button type="button" class="zq-actcompt-btn-submit" id="btn_fill_info">填写资料</button></div>
+			<button type="button" class="zq-actcompt-pop-btn-submit zq-actcompt-btn-box" id="btn_fill_info">填写资料</button>
 			{{/unless}}
 
 			<div class="zq-actcompt-pop-line"></div>
@@ -38,8 +38,6 @@
 			{{#if showError}}
 			<p class="zq-actcompt-sub-tit">{{msg}}</p>
 			{{/if}}
-
-
 		</div>
 	</section>
 </div>
