@@ -100,6 +100,12 @@ define(function(require, exports, module) {
 				},
 				'submit #image_captcha_form': function(e){
 					e.preventDefault();
+				},
+				'focus #captcha_input, #mobile_input, #sms_input': function(e){
+					this.handlePlaceholderFocus(e);
+				},
+				'blur #captcha_input, #mobile_input, #sms_input': function(e){
+					this.handlePlaceholderBlur(e);
 				}
 			}
 		},
@@ -561,6 +567,23 @@ define(function(require, exports, module) {
 			}
 		},
 
+		handlePlaceholderFocus: function(e){
+			var val = $(e.currentTarget).val();
+			if(val == '请输入手机号码' || val == '请输入验证码'){
+				$(e.currentTarget).val('');
+			}
+		},
+
+		handlePlaceholderBlur: function(e){
+			var val = $(e.currentTarget).val(),
+				id = $(e.currentTarget).attr('id');
+			if(val == '' && (id == 'sms_input' || id == 'captcha_input')){
+				$(e.currentTarget).val('请输入验证码');
+			} else if(val == '' && id == 'mobile_input'){
+				$(e.currentTarget).val('请输入手机号码');
+			}
+		},
+
 		/**
 		 * @method showImageCaptcha 显示图片验证码弹窗
 		 */		
@@ -589,7 +612,7 @@ define(function(require, exports, module) {
 		submitImageCaptcha: function(){
 			var self = this,
 				captcha = $.trim($('#captcha_input').val());
-			if(captcha.length < 4){
+			if(captcha.length < 4 || captcha == '请输入验证码'){
 				alert('请输入正确的验证码');
 				return;
 			}
@@ -612,8 +635,7 @@ define(function(require, exports, module) {
 			this.element.find('.zq-actcompt-or').text(joins+1);
 
 			$('.zq-actcompt-pop, .zq-actcompt-pop-mask').remove();
-
-			if(this.option('style') === 3 && resultType === 1){
+			if(this.option('style') == 3 && resultType === 1){
 				$('#zq_actcompt_in_progress').addClass('disabled');
 				this.animateIt(data.prizeId, data, '.zq-actcompt-item');
 			} else{

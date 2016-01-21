@@ -8,7 +8,7 @@
 		</div>
 		{{/each}}
 		<div class="zq-actcompt-item" data-prizeId="0">
-			<img src="http://ue.17173cdn.com/a/module/zq/2015/act-lottery/img/gn.png" alt="" />
+			<img src="http://ue.17173cdn.com/a/module/zq/2015/act-lottery/m/img/gn.jpg" alt="" />
 			<div></div>
 		</div>
 	</div>
@@ -37,7 +37,7 @@
 	</div>
 	{{/if}}
 
-	<p>活动时间：<br/>{{lotteryBeginTimeFormatted}} - {{lotteryEndTimeFormatted}}</p>
+	<p>活动时间：<br/></span>{{#if collectInfo}} {{beginTimeFormatted}} - {{endTimeFormatted}} {{else}} {{lotteryBeginTimeFormatted}} - {{lotteryEndTimeFormatted}}  {{/if}}</p>
 	<p>活动规则：<br>{{{description}}}</p>
 	
 </div>

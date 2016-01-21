@@ -45,7 +45,7 @@
 		<div class="zq-actcompt3-c2">
 			<div class="zq-actcompt-info">
 				<h4 class="zq-actcompt-tits">活动时间：</h4>
-				<p class="zq-actcompt-p">{{lotteryBeginTimeFormatted}} 至 {{lotteryEndTimeFormatted}}</p>
+				<p class="zq-actcompt-p">{{#if collectInfo}} {{beginTimeFormatted}} 至 {{endTimeFormatted}} {{else}} {{lotteryBeginTimeFormatted}} 至 {{lotteryEndTimeFormatted}}  {{/if}}</p>
 			</div>
 			<div class="zq-actcompt-info">
 				<h4 class="zq-actcompt-tits">活动规则：</h4>
