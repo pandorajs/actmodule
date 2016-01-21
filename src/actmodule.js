@@ -503,6 +503,8 @@ define(function(require, exports, module) {
 		submitInfoSuccess: function(){ 
 			$('#info_pop, .zq-actcompt-pop-mask').remove();
 			if(this.option('collectInfo')){
+				var joins = +this.element.find('.zq-actcompt-or').text();
+				this.element.find('.zq-actcompt-or').text(joins+1);
 				alert('您的信息已经成功提交。' + this.option('collectInfoTip'));
 			} else if(this.option('needInfo')){
 				this.checkValidate();
@@ -663,11 +665,11 @@ define(function(require, exports, module) {
 				$('#btn_copy_code').click(function(){
 					window.clipboardData.setData('Text', $('#act_module_code').val());
 					alert('已复制到剪贴板: ' + $('#act_module_code').val());
-				})
+				});
 				$('#btn_copy_secretkey').click(function(){
 					window.clipboardData.setData('Text', $('#act_module_secretkey').val());
 					alert('已复制到剪贴板: ' + $('#act_module_secretkey').val());
-				})
+				});
 			} else{
 				$('#btn_copy_code').zclip({
 					path: '/src/ZeroClipboard.swf',
@@ -680,7 +682,7 @@ define(function(require, exports, module) {
 				});
 				$('#btn_copy_secretkey').zclip({
 					// path: 'http://ue.17173cdn.com/a/lib/clipboard/ZeroClipboard.swf',
-					path: '/src/ZeroClipboard.swf',
+					path: '/src/ZeroClipboard.swf', //TODO
 					copy: function(){
 						return $('#act_module_secretkey').val();
 					},
@@ -689,7 +691,6 @@ define(function(require, exports, module) {
 					}
 				});	
 			}
-
 		}
 	});
 
