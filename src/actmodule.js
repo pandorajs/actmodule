@@ -366,6 +366,13 @@ define(function(require, exports, module) {
 		 * @method showCommentPop 显示评论弹窗
 		 */	
 		showCommentPop: function(){
+			//如果页面里没有畅言评论，跳过评论
+			// var sid = $('#SOHUCS').attr('sid');
+			// if(!sid){
+			// 	this.commentSuccess();
+			// 	return;
+			// }
+
 			var self = this,
 				data = {commentTip: self.option('commentTip')};
 			$('#comment_pop').length ? $('#comment_pop, .zq-actcompt-pop-mask').show() : $(self.templates[self.platform].comment(data)).appendTo(this.element);
@@ -632,6 +639,8 @@ define(function(require, exports, module) {
 				alert(data.msg);
 				return;
 			}
+
+			data.code = '235235'
 
 			var joins = +this.element.find('.zq-actcompt-or').text();
 			this.element.find('.zq-actcompt-or').text(joins+1);
