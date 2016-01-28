@@ -4,9 +4,6 @@ define(function(require, exports, module) {
 		Handlebars = require('handlebars'),
 		Utils = require('./utils');
 
-
-
-
 	/**
 	* 数据及基础类
 	*
@@ -43,7 +40,7 @@ define(function(require, exports, module) {
 				commentSubmit: 'http://act.17173.com/comment/submit.php?callback=?',
 				join: host + '/join?callback=?'
 			};
-			this.mobile = this.isMobile();
+			this.mobile = Utils.isMobile();
 			this.getActInfo();
 			this.ajaxPrefilter();
 			this.getTemplates();
@@ -93,23 +90,6 @@ define(function(require, exports, module) {
 					}
 				}
 			})
-		},
-
-		/**
-		 * @method isMobile 检测是否移动端
-		 * @private
-		 */
-		isMobile: function(){
-			var ua = navigator.userAgent,
-	            os = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPod", "BlackBerry"],
-	            mobile = false;
-	        for (var i = 0; i < os.length; i++) {
-	            if (ua.indexOf(os[i]) > -1) {
-	                mobile = true;
-	                break;
-	            }
-	        }
-	        return mobile;
 		},
 
 		/**
@@ -168,7 +148,7 @@ define(function(require, exports, module) {
 			if(!this.option('fieldSetId')){
 				return;
 			}
-			$.getJSON(self.urls.fieldset, {formId: this.option('fieldSetId')}, function(data){
+			$.getJSON(self.urls.fieldset, function(data){
 				for(var i = 0; i < data.formField.length; i++){
 					if(data.formField[i].columnName == 'comment'){
 						data.formField[i].comment = true;
@@ -337,11 +317,11 @@ define(function(require, exports, module) {
 	     * @method sendSms 发送短信验证码
 	     * @param  {String}   mobile 手机号码
 	     * @private
-	     */	
+	     */
 		sendSms: function(mobile){
 			var self = this;
 			$.getJSON(this.urls.sms, {mobile: mobile}, function(data){
-				if(data.result === 'info.sms.success'){ //TODO: !! 这里改成成功的
+				if(data.result === 'info.sms.success'){ 
 					self.smsSended = true;
 					self.smsSendSuccess();
 				} else{
@@ -371,6 +351,9 @@ define(function(require, exports, module) {
 						self.submitInfoSuccess();
 					} else{
 						alert(data.msg);
+						if(data.result == 'info.act.close'){
+							self.actClose();
+						}
 					}
 				});
 			}
@@ -507,9 +490,13 @@ define(function(require, exports, module) {
 
 			this.done(data, resultType);
 			if(resultType == 1){
-				$.getJSON(this.urls.join); //发送参与标识
+				this.join();
 			}
 			
+		},
+
+		join: function(){
+			$.getJSON(this.urls.join); //发送参与标识
 		}
 	});
 

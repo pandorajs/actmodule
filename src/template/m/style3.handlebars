@@ -1,6 +1,6 @@
 <div class="zq-actcompt3 zq-actcompt">
 	<h4 class="zq-actcompt-tit">{{name}}</h4>
-	<div class="zq-actcompt-box">
+	<div class="zq-actcompt-box zq-actcompt-box-{{prizeList.length}}">
 		{{#each prizeList}}
 		<div class="zq-actcompt-item zq-actcompt-item{{index}}" data-prizeId="{{prizeId}}">
 			<img src="{{prizePicture}}" alt="" />
@@ -16,7 +16,7 @@
 	{{#if status.inProgress}}
 	<a href="javascript:;"  title="" class="zq-actcompt-btn-cj" id="zq_actcompt_in_progress">我要抽奖<i class="zq-actcompt-ico-play"></i></a>
 	<div class="zq-actcompt-num">
-		<i class="zq-actcompt-ico-per2"></i>已有 <span class="zq-actcompt-or">{{joins}} </span>人参与
+		<i class="zq-actcompt-ico-per2"></i>已有 <span class="zq-actcompt-or"><span class="zq-actcompt-joins">{{joins}}</span> </span>人参与
 		{{#if status.winnerUrl}}
 		<a href="{{status.winnerUrl}}"  title="查看中奖名单" class="zq-actcompt-btn-winners">查看中奖名单&gt;&gt;</a>
 		{{/if}}

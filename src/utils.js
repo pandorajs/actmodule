@@ -14,6 +14,22 @@ define(function(require, exports, module) {
 	        var seconds = totalSec % 60;
 	        return (days + '\u5929' + hours + '\u5c0f\u65f6' + minutes + '\u5206' + seconds + '\u79d2');
 		},
+		/**
+		 * @method isMobile 检测是否移动端
+		 * @private
+		 */
+		isMobile: function(){
+			var ua = navigator.userAgent,
+	            os = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPod", "BlackBerry"],
+	            mobile = false;
+	        for (var i = 0; i < os.length; i++) {
+	            if (ua.indexOf(os[i]) > -1) {
+	                mobile = true;
+	                break;
+	            }
+	        }
+	        return mobile;
+		},
 		base64_encode: function(str){
 		    var c1, c2, c3;
 		    var base64EncodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";                

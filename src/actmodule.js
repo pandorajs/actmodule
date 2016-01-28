@@ -175,18 +175,22 @@ define(function(require, exports, module) {
 		/**
 		 * @method checkStatus 判断活动状态
 		 * @return {object} 返回的对象会加到接口的活动数据里，填充到handlebars模板里
+		 * @param  {String}   beginTime 开始时间 yyyy-mm-dd hh:mm:ss
+		 * @param  {String}   endTime 结束时间 yyyy-mm-dd hh:mm:ss
+		 * @param  {Number}   timestamp 当前服务器时间
 		 * @private
 		 */
-		checkStatus: function(beginTime, endTime){
+		checkStatus: function(beginTime, endTime, timestamp){
 			var beginTimeUnix = Utils.datetimeToUnix(beginTime),
 				endTimeUnix = Utils.datetimeToUnix(endTime),
-				nowUnix = ~~($.now() / 1000),
+				nowUnix = timestamp,
 				winnerUrl = this.option('winnerUrl') ? this.option('winnerUrl') : false;
 
 			if(nowUnix < beginTimeUnix){
 				return {
 					timeLeft: beginTimeUnix - nowUnix,
-					notYetStart: true
+					notYetStart: true,
+					winnerUrl: winnerUrl
 				};
 			}
 			if(nowUnix > endTimeUnix){
@@ -212,27 +216,14 @@ define(function(require, exports, module) {
 				endTime = this.option('collectInfo') ? actInfo.endTime : actInfo.lotteryEndTime;
 
 			this.endTime = Utils.datetimeToUnix(endTime);
-			actInfo.status = self.checkStatus(startTime, endTime);
+			actInfo.status = self.checkStatus(startTime, endTime, actInfo.timestamp);
 
 			if(this.option('style') == 4 && this.mobile){
 				console.error('样式4不支持移动端。');
 				return;
 			}
 
-			switch(+self.option('style')){
-				case 1:
-					$(self.templates[self.platform].template1(actInfo)).appendTo(self.element);
-					break;
-				case 2:
-					$(self.templates[self.platform].template2(actInfo)).appendTo(self.element);
-					break;
-				case 3:
-					$(self.templates[self.platform].template3(actInfo)).appendTo(self.element);
-					break;
-				case 4:
-					$(self.templates[self.platform].template4(actInfo)).appendTo(self.element);
-					break;
-			}
+			self.reset(actInfo);
 
 			if(!actInfo.status.ended){
 				self.initAct();
@@ -240,54 +231,66 @@ define(function(require, exports, module) {
 
 			//活动未开始
 			if(actInfo.status.notYetStart){
-
 				var timeElement = this.mobile ? '.many' : '.zq-actcompt-or';
-				self.element.find(timeElement).text(Utils.formatSeconds(actInfo.status.timeLeft));
-
+				var timeLeft = actInfo.status.timeLeft;
+				self.element.find(timeElement).text(Utils.formatSeconds(timeLeft));
 				var timeInterval = setInterval(function(){
-					var timeLeft = self.checkStatus(startTime, endTime).timeLeft;
+					timeLeft--;
 					self.element.find(timeElement).text(Utils.formatSeconds(timeLeft));
-
 					if(timeLeft <= 0){
 						clearInterval(timeInterval);
-						if(self.mobile){
-							switch(+self.option('style')){
-								case 1:
-									self.element.find('#zq_actcompt_not_yet_start').replaceWith('<a href="javascript:;" class="zq-actcompt-btn-get" id="zq_actcompt_in_progress"><span class="text">立即<br />领取</span><span class="many">已有' + self.actInfo.joins + '人参与</span></a>');
-									self.element.find('.zq-actcompt1-begin').attr('class', 'zq-actcompt1 zq-actcompt');
-									break;
-								case 2:
-									self.element.find('#zq_actcompt_not_yet_start').replaceWith('<a href="javascript:;" class="zq-actcompt-btn" id="zq_actcompt_in_progress"><span class="many"><i class="zq-actcompt-ico-per1"></i>已有' + self.actInfo.joins + '人参与</span><span class="sep"></span>立即领取</a>');
-									break;
-								case 3:
-									var winnerHtml = self.option('winnerUrl') ? '<a href="' + self.option('winnerUrl') + '"  title="查看中奖名单" class="zq-actcompt-btn-winners">查看中奖名单&gt;&gt;</a>' : '';
-									$('#zq_actcompt_not_yet_start').replaceWith('<a href="javascript:;"  title="" class="zq-actcompt-btn-cj" id="zq_actcompt_in_progress">我要抽奖<i class="zq-actcompt-ico-play"></i></a>');
-									$('.zq-actcompt-num').html('<i class="zq-actcompt-ico-per2"></i>已有 <span class="zq-actcompt-or">' + self.actInfo.joins + '</span>人参与' + winnerHtml);
-									break;
-							}
-						} else{
-							switch(+self.option('style')){
-								case 1:
-									$('.zq-actcompt-state-tt').html('已有<span class="zq-actcompt-or zq-actcompt-fb">' + self.actInfo.joins + '</span>人参与');
-									self.element.find('#zq_actcompt_not_yet_start').attr('id', 'zq_actcompt_in_progress').text('立即领取').removeClass('zq-actcompt-btn-begin').addClass('zq-actcompt-btn-in');
-									break;
-								case 2:
-									$('.zq-actcompt-state-tt').html('已有<span class="zq-actcompt-or zq-actcompt-fb">' + self.actInfo.joins + '</span>人参与');
-									self.element.find('#zq_actcompt_not_yet_start').attr('id', 'zq_actcompt_in_progress').text('立即领取').removeClass('zq-actcompt-btn-begin').addClass('zq-actcompt-btn-in');
-									break;
-								case 3:
-									var winnerHtml = self.option('winnerUrl') ? '<a href="' + self.option('winnerUrl') + '" target="_blank" title="查看中奖名单" class="zq-actcompt-fr zq-actcompt-btn-winners ">查看中奖名单&gt;&gt;</a>' : '';
-									$('.zq-actcompt-or').replaceWith('<div class="zq-actcompt-oz"><span class="zq-actcompt-fl">已有<span class="zq-actcompt-or zq-actcompt-fb">' + self.actInfo.joins + '</span>人参与</span>' + winnerHtml + '</div>');
-									self.element.find('#zq_actcompt_not_yet_start').replaceWith('<a href="#lottery" title="我要抽奖" class="zq-actcompt-btn-cj" id="zq_actcompt_in_progress">我要抽奖<i class="zq-actcompt-ico zq-actcompt-ico-play"></i></a>');
-									break;
-								case 4:
-									$('.zq-actcompt-p').html('已有<span class="zq-actcompt-or zq-actcompt-fb">' + self.actInfo.joins + '</span>人参与');
-									self.element.find('#zq_actcompt_not_yet_start').attr('id', 'zq_actcompt_in_progress').text('立即领取');
-									break;
-							}
-						}
+						self.reset(actInfo, 'inProgress');
 					}
 				}, 1000);
+			}
+
+			//如果当前时间在活动结束前一个小时内，开始倒计时
+			if(actInfo.status.inProgress){
+				var tl = Utils.datetimeToUnix(endTime) - actInfo.timestamp;
+				if(tl < 3600){
+					var endInterval = setInterval(function(){
+						tl--;
+						console.log(tl)
+						if(tl <= 0){
+							clearInterval(endInterval);
+							self.reset(actInfo, 'ended');
+						}
+					}, 1000);
+				}
+			}
+		},
+
+		/**
+		 * @method reset 设置组件状态
+		 * @param  {Object}   actInfo 组件数据.
+		 * @param  {Boolean}   status 组件状态. 'inProgress': 活动开始, 'ended':活动结束
+		 */			
+		reset: function(actInfo, status){
+			this.element.html('');
+
+			if(status == 'inProgress'){
+				actInfo.status.inProgress = true;
+				actInfo.status.notYetStart = false;
+				actInfo.status.ended = false;
+			} else if(status == 'ended'){
+				actInfo.status.inProgress = false;
+				actInfo.status.notYetStart = false;
+				actInfo.status.ended = true;
+			}
+
+			switch(+this.option('style')){
+				case 1:
+					$(this.templates[this.platform].template1(actInfo)).appendTo(this.element);
+					break;
+				case 2:
+					$(this.templates[this.platform].template2(actInfo)).appendTo(this.element);
+					break;
+				case 3:
+					$(this.templates[this.platform].template3(actInfo)).appendTo(this.element);
+					break;
+				case 4:
+					$(this.templates[this.platform].template4(actInfo)).appendTo(this.element);
+					break;															
 			}
 		},
 
@@ -509,15 +512,23 @@ define(function(require, exports, module) {
 		 */
 		submitInfoSuccess: function(){ 
 			$('#info_pop, .zq-actcompt-pop-mask').remove();
+
 			if(this.option('collectInfo')){
-				var joins = +this.element.find('.zq-actcompt-or').text();
-				this.element.find('.zq-actcompt-or').text(joins+1);
+				this.join();
+				this.addJoinNumber();
 				alert('您的信息已经成功提交。' + this.option('collectInfoTip'));
 			} else if(this.option('needInfo')){
 				this.checkValidate();
 			} else{
 				alert('您的信息已经成功提交。');
 			}
+		},
+
+		/**
+		 * @method actClose 活动结束的回调
+		 */		
+		actClose: function(){
+			$('#info_pop, .zq-actcompt-pop-mask').remove();
 		},
 
 		/**
@@ -568,6 +579,10 @@ define(function(require, exports, module) {
 			}
 		},
 
+		/**
+		 * @method inputKeyupHandler 处理输入框keyup事件
+		 * @param  {Object}   e 事件对象
+		 */	
 		inputKeyupHandler: function(e){
 			if(this.mobile){
 				$(e.currentTarget).parent().next('.zq-actcompt-form-error').hide().find('span').text('');
@@ -576,6 +591,10 @@ define(function(require, exports, module) {
 			}
 		},
 
+		/**
+		 * @method handlePlaceholderFocus 处理输入框Focus事件
+		 * @param  {Object}   e 事件对象
+		 */	
 		handlePlaceholderFocus: function(e){
 			var val = $(e.currentTarget).val();
 			if(val == '请输入手机号码' || val == '请输入验证码'){
@@ -583,6 +602,10 @@ define(function(require, exports, module) {
 			}
 		},
 
+		/**
+		 * @method handlePlaceholderBlur 处理输入框Blur事件
+		 * @param  {Object}   e 事件对象
+		 */	
 		handlePlaceholderBlur: function(e){
 			var val = $(e.currentTarget).val(),
 				id = $(e.currentTarget).attr('id');
@@ -640,10 +663,20 @@ define(function(require, exports, module) {
 				return;
 			}
 
-			data.code = '235235'
+			//如果未中奖，且前置条件有评论，需要自动提交评论信息.
+			if(data.failed && this.commentContent !== undefined && this.fieldSet && this.fieldSet.length > 0){
+				var fd = {formData: {}};
+				for(var i = 0; i < this.fieldSet.length; i++){
+					if(this.fieldSet[i].columnName == 'comment'){
+						fd.formData.comment = this.commentContent;
+					} else{
+						fd.formData[this.fieldSet[i].columnName] = '/';
+					}
+				}
+				fd.formData.comment && $.getJSON(this.urls.saveInfo, fd);
+			}
 
-			var joins = +this.element.find('.zq-actcompt-or').text();
-			this.element.find('.zq-actcompt-or').text(joins+1);
+			this.addJoinNumber();
 
 			$('.zq-actcompt-pop, .zq-actcompt-pop-mask').remove();
 			if(this.option('style') == 3 && resultType === 1){
@@ -651,12 +684,28 @@ define(function(require, exports, module) {
 				this.animateIt(data.prizeId, data, '.zq-actcompt-item');
 			} else{
 				this.animateEnd(data);
-
 	        	// $(template(data)).appendTo(this.element);
 	        	// this.copy();
 			}
 		},
 
+		/**
+		 * @method addJoinNumber 把参与数加1
+		 */	
+		addJoinNumber: function(){
+			if(this.mobile){
+				var joins = +this.element.find('.zq-actcompt-joins').text();
+				this.element.find('.zq-actcompt-joins').text(joins+1);
+			} else{
+				var joins = +this.element.find('.zq-actcompt-or').text();
+				this.element.find('.zq-actcompt-or').text(joins+1);
+			}
+		},
+
+		/**
+		 * @method animateEnd 抽奖动画结束后的回调，如无抽奖动画也是直接调用这个
+		 * @param  {Object} data 后端返回的抽奖结果
+		 */	
 		animateEnd: function(data){
         	$(this.templates[this.platform].result(data)).appendTo(this.element);
         	if(!this.option('needInfo') && !data.code){//实物
