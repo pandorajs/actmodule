@@ -1,12 +1,12 @@
 <div class="zq-actcompt zq-actcompt1">
 	{{#if showImg}}
 	<div class="zq-actcompt-pic">
-		<img src="{{activityImage}}!a-3-240x.jpg" width="180" height="135" alt="" />
+		<img src="{{activityImage}}!a-3-240x.jpg" width="180" alt="" />
 	</div>
 	{{/if}}
 	<div class="zq-actcompt-text">
 		<h4 class="zq-actcompt-tit">{{name}}</h4>
-		<p class="zq-actcompt-p">活动时间：{{#if collectInfo}} {{beginTimeFormatted}} 至 {{endTimeFormatted}} {{else}} {{lotteryBeginTimeFormatted}} 至 {{lotteryEndTimeFormatted}}  {{/if}}</p>
+		<p class="zq-actcompt-p">活动时间：{{#if collectInfo}} {{beginTimeFormatted}} - {{endTimeFormatted}} {{else}} {{lotteryBeginTimeFormatted}} - {{lotteryEndTimeFormatted}}  {{/if}}</p>
 		<p class="zq-actcompt-p">活动规则：{{{description}}}</p>
 	</div>
 	<div class="zq-actcompt-state">

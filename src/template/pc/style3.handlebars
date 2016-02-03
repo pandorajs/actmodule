@@ -3,7 +3,7 @@
 		<h4 class="zq-actcompt-tit">{{name}}</h4>
 	</div>
 	<div class="zq-actcompt-bd">
-		<div class="zq-actcompt3-c1 zq-actcompt-fl" style="width:342px;">
+		<div class="zq-actcompt3-c1 zq-actcompt-fl zq-actcompt3-{{prizeCount}}">
 			<div class="zq-actcompt-box zq-actcompt-box-{{prizeCount}}">
 
 				{{#each prizeList}}
@@ -45,7 +45,7 @@
 		<div class="zq-actcompt3-c2">
 			<div class="zq-actcompt-info">
 				<h4 class="zq-actcompt-tits">活动时间：</h4>
-				<p class="zq-actcompt-p">{{#if collectInfo}} {{beginTimeFormatted}} 至 {{endTimeFormatted}} {{else}} {{lotteryBeginTimeFormatted}} 至 {{lotteryEndTimeFormatted}}  {{/if}}</p>
+				<p class="zq-actcompt-p">{{#if collectInfo}} {{beginTimeFormatted}} - {{endTimeFormatted}} {{else}} {{lotteryBeginTimeFormatted}} - {{lotteryEndTimeFormatted}}  {{/if}}</p>
 			</div>
 			<div class="zq-actcompt-info">
 				<h4 class="zq-actcompt-tits">活动规则：</h4>

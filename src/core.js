@@ -103,8 +103,8 @@ define(function(require, exports, module) {
 				if(actInfo.result){
 					return;
 				}
-				actInfo.beginTimeFormatted = actInfo.beginTime.substring(0, 16);
-				actInfo.endTimeFormatted = actInfo.endTime.substring(0, 16);
+				actInfo.beginTimeFormatted = actInfo.beginTime.substring(0, 10).replace(/-/g, '.');
+				actInfo.endTimeFormatted = actInfo.endTime.substring(0, 10).replace(/-/g, '.');
 				actInfo.collectInfo = self.option('collectInfo');
 				self.getLotteryInfo(actInfo);
 				self.actInfo = actInfo;
@@ -131,8 +131,8 @@ define(function(require, exports, module) {
 						showImg: self.option('showImg'),
 						lotteryBeginTime: lotteryData.startTime,
 						lotteryEndTime: lotteryData.endTime,
-						lotteryBeginTimeFormatted: lotteryData.startTime.substring(0, 16),
-						lotteryEndTimeFormatted: lotteryData.endTime.substring(0, 16)
+						lotteryBeginTimeFormatted: lotteryData.startTime.substring(0, 10).replace(/-/g, '.'),
+						lotteryEndTimeFormatted: lotteryData.endTime.substring(0, 10).replace(/-/g, '.')
 					}
 					actInfo = $.extend({}, actInfo, info);
 					self.render(actInfo);
@@ -271,7 +271,7 @@ define(function(require, exports, module) {
 				$.getJSON(self.urls.commentSubmit, {
                     client_id: 'cyqvqDTV5',//固定，不要更改
                     topic_id: topicId,
-                    content: encodeURIComponent(val),
+                    content: val,
                     access_token: 'P9YIlfiDcC45SbJInp7DCfvA-Bhgu1ZG'//固定，不要更改
 				}, function(json){
 					self.commentContent = val; //把评论数据存起来
