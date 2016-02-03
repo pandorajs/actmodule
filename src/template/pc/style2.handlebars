@@ -10,15 +10,15 @@
 		<p class="zq-actcompt-p">活动规则：{{{description}}}</p>
 		<div class="zq-actcompt2-state">
 			{{#if status.notYetStart}}
-			<a href="#" class="zq-actcompt-btn zq-actcompt-btn-begin" id="zq_actcompt_not_yet_start">即将开始</a>
+			<a href="#lottery" class="zq-actcompt-btn zq-actcompt-btn-begin" id="zq_actcompt_not_yet_start">即将开始</a>
 			<p class="zq-actcompt-state-tt"><span class="zq-actcompt-or"></span></p>
 			{{/if}}
 			{{#if status.inProgress}}
-			<a href="#" class="zq-actcompt-btn zq-actcompt-btn-in" id="zq_actcompt_in_progress">立即参与</a>
+			<a href="#lottery" class="zq-actcompt-btn zq-actcompt-btn-in" id="zq_actcompt_in_progress">立即参与</a>
 			<p class="zq-actcompt-state-tt">已有<span class="zq-actcompt-or zq-actcompt-fb">{{joins}}</span>人参与</p>
 			{{/if}}	
 			{{#if status.ended}}
-			<a href="#" class="zq-actcompt-btn zq-actcompt-btn-end" id="zq_actcompt_ended">已结束</a>
+			<a href="#lottery" class="zq-actcompt-btn zq-actcompt-btn-end" id="zq_actcompt_ended">已结束</a>
 			<p class="zq-actcompt-state-tt">已有<span class="zq-actcompt-or zq-actcompt-fb">{{joins}}</span>人参与</p>
 			{{/if}}
 		</div>

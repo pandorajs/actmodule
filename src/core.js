@@ -40,7 +40,7 @@ define(function(require, exports, module) {
 				commentSubmit: 'http://act.17173.com/comment/submit.php?callback=?',
 				join: host + '/join?callback=?'
 			};
-			this.mobile = Utils.isMobile();
+			this.mobile = this.option('forceMobile') || Utils.isMobile();
 			this.getActInfo();
 			this.ajaxPrefilter();
 			this.getTemplates();
@@ -127,6 +127,7 @@ define(function(require, exports, module) {
 					self.needLoggedIn = lotteryData.limitCond.indexOf('login') > -1;
 					var info = {
 						prizeList: lotteryData.prizeList,
+						prizeCount: lotteryData.prizeList.length + 1,
 						showImg: self.option('showImg'),
 						lotteryBeginTime: lotteryData.startTime,
 						lotteryEndTime: lotteryData.endTime,
@@ -273,8 +274,8 @@ define(function(require, exports, module) {
                     content: encodeURIComponent(val),
                     access_token: 'P9YIlfiDcC45SbJInp7DCfvA-Bhgu1ZG'//固定，不要更改
 				}, function(json){
+					self.commentContent = val; //把评论数据存起来
 					if(!self.option('collectInfo')){ //如果是即时抽奖
-						self.commentContent = val; //把评论数据存起来
 						if(self.notShowInfo){ //且收集表单里只有一个评论字段，就在这里把评论提交到收集表单
 							self.submitInfo({comment: val});
 						}
@@ -335,28 +336,35 @@ define(function(require, exports, module) {
 	     * @private
 	     */
 		submitInfo: function(commentData){
-			if(Math.floor(new Date().getTime()/1000) > this.endTime){
-				alert('活动已结束.');
-				return;
-			}
-			var self = this,
-				formData = commentData || this.validateInfoForm();
-			if(!!formData){
-				var info = {
-					lotteryId: self.lotteryId,
-					formData: formData
+			// if(Math.floor(new Date().getTime()/1000) > this.endTime){
+			// 	alert('活动已结束.');
+			// 	return;
+			// }
+			var self = this;
+			var url = this.collectInfo ? this.urls.actInfo : this.urls.lotteryInfo;
+			$.getJSON(url, function(data){
+				if(data.timestamp > this.endTime){
+					alert('活动已结束.');
+					return;
 				}
-				$.getJSON(self.urls.saveInfo, info, function(data){
-					if(data.result === 'info.form.success'){
-						self.submitInfoSuccess();
-					} else{
-						alert(data.msg);
-						if(data.result == 'info.act.close'){
-							self.actClose();
-						}
+				var formData = commentData || self.validateInfoForm();
+				if(!!formData){
+					var info = {
+						lotteryId: self.lotteryId,
+						formData: formData
 					}
-				});
-			}
+					$.getJSON(self.urls.saveInfo, info, function(data){
+						if(data.result === 'info.form.success'){
+							self.submitInfoSuccess();
+						} else{
+							alert(data.msg);
+							if(data.result == 'info.act.close'){
+								self.actClose();
+							}
+						}
+					});
+				}
+			})
 		},
 
 

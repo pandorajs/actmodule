@@ -250,7 +250,6 @@ define(function(require, exports, module) {
 				if(tl < 3600){
 					var endInterval = setInterval(function(){
 						tl--;
-						console.log(tl)
 						if(tl <= 0){
 							clearInterval(endInterval);
 							self.reset(actInfo, 'ended');
@@ -663,8 +662,8 @@ define(function(require, exports, module) {
 				return;
 			}
 
-			//如果未中奖，且前置条件有评论，需要自动提交评论信息.
-			if(data.failed && this.commentContent !== undefined && this.fieldSet && this.fieldSet.length > 0){
+			//如果未中奖或者中虚拟奖品，且前置条件有评论，需要自动提交评论信息.
+			if((data.failed || (data.success && data.code)) && this.commentContent !== undefined && !this.option('needInfo') && this.fieldSet && this.fieldSet.length > 0){
 				var fd = {formData: {}};
 				for(var i = 0; i < this.fieldSet.length; i++){
 					if(this.fieldSet[i].columnName == 'comment'){
@@ -730,7 +729,7 @@ define(function(require, exports, module) {
 				});
 			} else{
 				$('#btn_copy_code').zclip({
-					path: '/src/ZeroClipboard.swf',
+					path: 'http://ue.17173cdn.com/a/lib/pandora/actmodule/ZeroClipboard.swf',
 					copy: function(){
 						return $('#act_module_code').val();
 					},
@@ -739,8 +738,7 @@ define(function(require, exports, module) {
 					}
 				});
 				$('#btn_copy_secretkey').zclip({
-					// path: 'http://ue.17173cdn.com/a/lib/clipboard/ZeroClipboard.swf',
-					path: '/src/ZeroClipboard.swf', //TODO
+					path: 'http://ue.17173cdn.com/a/lib/pandora/actmodule/ZeroClipboard.swf',
 					copy: function(){
 						return $('#act_module_secretkey').val();
 					},
