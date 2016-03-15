@@ -20,10 +20,12 @@ define(function(require, exports, module) {
 		defaults: {
 			actId: 0,
 			style: 1,
-			fieldset: ''
+			fieldset: '',
+			notWinHtmlPc: '<h4 class="zq-actcompt-tit">很抱歉，您未能中奖</h4><p>请继续关注17173，更多活动等着您。</p>',
+			notWinHtmlMobile: '<p class="zq-actcompt-pop-zjtit zq-actcompt-tx1 zq-actcompt-pop-tiptxt">很抱歉，您未能中奖！<br>请继续关注17173，更多活动等着您。</p>'
 		},
 		setup: function(){
-			var host = this.host = 'http://p.act.dev.17173.com/api/v1/activity/' + this.option('actId'),
+			var host = this.host = 'http://p.act.17173.com/api/v1/activity/' + this.option('actId'),
 				lotteryId = this.option('lotteryId'),
 				fieldSetId = this.option('fieldSetId');
 			this.urls = {
@@ -37,7 +39,7 @@ define(function(require, exports, module) {
 				saveInfo: host + '/form/' + this.option('fieldSetId') + '/saveData?callback=?',
 				checkLogin: host + '/lottery/' + lotteryId + '/chkLogin?callback=?',
 				cyanLoad: 'http://changyan.sohu.com/api/2/topic/load?callback=?',
-				commentSubmit: 'http://act.17173.com/comment/submit.php?callback=?',
+				commentSubmit: 'http://changyan.sohu.com/api/2/comment/submit?callback=?',
 				join: host + '/join?callback=?'
 			};
 			this.mobile = this.option('forceMobile') || Utils.isMobile();
@@ -134,6 +136,7 @@ define(function(require, exports, module) {
 						lotteryBeginTimeFormatted: lotteryData.startTime.substring(0, 10).replace(/-/g, '.'),
 						lotteryEndTimeFormatted: lotteryData.endTime.substring(0, 10).replace(/-/g, '.')
 					}
+
 					actInfo = $.extend({}, actInfo, info);
 					self.render(actInfo);
 				});			
@@ -261,9 +264,11 @@ define(function(require, exports, module) {
 	     */		
 		doComment: function(val, sid){
 			var self = this;
+			//如果组件不是插到新闻的第一页，要把请求的页面URL改成第一页的地址，否则返回的topic_id就是不正确的。
+			//http://wd.17173.com/content/03032016/095430501_2.shtml 要改成 http://wd.17173.com/content/03032016/095430501_1.shtml
 			$.getJSON(this.urls.cyanLoad, {
 				source_id: sid, //评论SID,不可为空
-                topic_url: location.href, //需要评论文章的URL,不可为空
+                topic_url: location.href.split('#')[0].split('?')[0].replace(/_\d/, '_1'), //需要评论文章的URL,不可为空
                 client_id: 'cyqvqDTV5' //固定，不要更改
 			}, function(data){
 				data = self.mapCommentData(data);
@@ -382,7 +387,7 @@ define(function(require, exports, module) {
 		    var index = 0;  //起始位置
 		    var obj = $(el);
 		    var len = obj.length;
-		    var circle = 10;  //转10圈                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       
+		    var circle = 10;  //转10圈                                      
 		    var stopAt;      //最终奖品位置
 		    var speed = 12;  //速度
 		    var base = 30;   //减速度
@@ -451,6 +456,8 @@ define(function(require, exports, module) {
 			$.getJSON(this.urls.lottery, data, function(resultData){
 				// resultData.code = '25235236236236';
 				// resultData.secretKey = 'secretKey';
+				resultData.notWinHtmlPc = self.option('notWinHtmlPc');
+				resultData.notWinHtmlMobile = self.option('notWinHtmlMobile');
 				self.handleLotteryResult(resultData);
 			});
 		},

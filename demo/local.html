@@ -29,26 +29,17 @@
 
 
 <div id="act_module"></div>
-
-<script type="text/javascript">
-    seajs.use(['../src/actmodule'], function(ActModule) {
-        new ActModule({
-            element: '#act_module',
-            actId: "4959", //活动ID
-            lotteryId: "62", //抽奖ID
-            style: "1", //样式
-            // voteId: "10210", //投票ID
-            needComment: true, //是否需要评论
-            commentTip: '这里你要评论下', //评论导语
-            showImg: true,
-            fieldSetId: "39", //收集信息的表单ID
-            winnerUrl: 'http://www.163.com', //中奖名单链接
-            needInfo: false, //是否需要填写个人信息
-            collectInfo: false, //是否人工抽奖
-            collectInfoTip: 'YOYOYOYO' //人工抽奖提交成功后的提示语
-        });
-    });
+<script>
+    seajs.use(['../src/actmodule'], function(ActModule) {new ActModule({
+                "element":"#act_module",
+                "actId":"7126",
+                "lotteryId":"92",
+                "style":"4",
+                "showImg":false,
+                "notWinHtmlPc":'<h4 class="zq-actcompt-tit">抱歉，没抽中乃兵家常事，</h4><p> 请大侠等下再来！</p><p>17173问道手游玩家交流群： 302480010</p>'
+            })});
 </script>
+
 
 <div id="SOHUCS" sid="4065990_2_10345"></div>
 </body>

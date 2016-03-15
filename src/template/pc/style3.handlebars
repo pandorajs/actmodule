@@ -22,7 +22,7 @@
 			{{#if status.inProgress}}
 			<a href="#lottery" title="我要抽奖" class="zq-actcompt-btn-cj" id="zq_actcompt_in_progress">我要抽奖<i class="zq-actcompt-ico zq-actcompt-ico-play"></i></a>
 			<div class="zq-actcompt-oz">
-				<span class="zq-actcompt-fl">已有<span class="zq-actcompt-or zq-actcompt-fb">{{joins}}</span>人参与</span>
+				<span class="zq-actcompt-fl zq-actcompt-joins">已有<span class="zq-actcompt-or zq-actcompt-fb">{{joins}}</span>人参与</span>
 				{{#if status.winnerUrl}}
 				<a href="{{status.winnerUrl}}" target="_blank" title="查看中奖名单" class="zq-actcompt-fr zq-actcompt-btn-winners ">查看中奖名单&gt;&gt;</a>
 				{{/if}}
@@ -31,12 +31,12 @@
 
 			{{#if status.notYetStart}}
 			<span title="即将开始" class="zq-actcompt-btn-cj zq-actcompt-btn-cjw" id="zq_actcompt_not_yet_start">即将开始<i class="zq-actcompt-ico zq-actcompt-ico-play"></i></span>
-			<p class="zq-actcompt-p zq-actcompt-or"></p>
+			<p class="zq-actcompt-p zq-actcompt-or zq-actcompt-countdown"></p>
 			{{/if}}
 
 			{{#if status.ended}}
 			<span title="活动已结束" class="zq-actcompt-btn-cj zq-actcompt-btn-cjw">活动已结束<i class="zq-actcompt-ico zq-actcompt-ico-play"></i></span>
-			<p class="zq-actcompt-p">已有<span class="zq-actcompt-or zq-actcompt-fb">{{joins}}</span>人参与</p>
+			<p class="zq-actcompt-p zq-actcompt-joins">已有<span class="zq-actcompt-or zq-actcompt-fb">{{joins}}</span>人参与</p>
 			{{/if}}
 
 		</div>	
@@ -44,11 +44,11 @@
 
 		<div class="zq-actcompt3-c2">
 			<div class="zq-actcompt-info">
-				<h4 class="zq-actcompt-tits">活动时间：</h4>
+				<h4 class="zq-actcompt-tits"><strong>活动时间：</strong></h4>
 				<p class="zq-actcompt-p">{{#if collectInfo}} {{beginTimeFormatted}} - {{endTimeFormatted}} {{else}} {{lotteryBeginTimeFormatted}} - {{lotteryEndTimeFormatted}}  {{/if}}</p>
 			</div>
 			<div class="zq-actcompt-info">
-				<h4 class="zq-actcompt-tits">活动规则：</h4>
+				<h4 class="zq-actcompt-tits"><strong>活动规则：</strong></h4>
 				{{{description}}}
 			</div>
 		</div>

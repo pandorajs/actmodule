@@ -153,7 +153,8 @@ module.exports = function(grunt) {
             'DEBUG': false
           },
           'dead_code': true
-        }
+        },
+        ASCIIOnly: true
       },
       dist: {
         files: [{

@@ -548,7 +548,7 @@ define(function(require, exports, module) {
 					name = $(this).attr('name'),
 					cName = $(this).parents('.zq-actcompt-form-item').find('[data-name]').text(),
 					$error = this.mobile ? $(this).parent().next('.zq-actcompt-form-error') : $(this).parents('.zq-actcompt-form-item').next('.zq-actcompt-form-error'),
-					$errorText = this.mobile ? $error : $error.find('span');
+					$errorText = this.mobile ?  $error.find('span') : $error;
 				if(val === ''){
 					$error.show();
 					$errorText.text('请填写您的' + cName);
